@@ -1,13 +1,16 @@
-Sub InsereAssinatura()
+Sub InserirAssinatura()
     Dim objMail As MailItem
+    Dim strAssinatura As String
+    
+    ' Obtém o e-mail atual
     Set objMail = Application.ActiveInspector.CurrentItem
     
-    'Verifica se o corpo do e-mail está vazio
-    If objMail.Body = "" Then
-        'Caso esteja vazio, insere apenas a assinatura
-        objMail.HTMLBody = objMail.HTMLBody & objMail.HTMLBody & objMail.HTMLBody
-    Else
-        'Caso contrário, insere o corpo do e-mail e a assinatura
-        objMail.HTMLBody = objMail.HTMLBody & objMail.HTMLBody & objMail.HTMLBody & objMail.HTMLBody
-    End If
+    ' Define a assinatura padrão
+    strAssinatura = objMail.HTMLBody
+    
+    ' Insere a assinatura no final do corpo do e-mail
+    objMail.HTMLBody = objMail.HTMLBody & strAssinatura
+    
+    ' Libera a memória do objeto MailItem
+    Set objMail = Nothing
 End Sub
