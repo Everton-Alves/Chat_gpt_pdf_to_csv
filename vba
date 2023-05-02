@@ -1,24 +1,23 @@
-Sub InserirAssinaturaOutlook()
-    Dim olApp As Object 'Outlook.Application
-    Dim olMsg As Object 'Outlook.MailItem
-    Dim strAssinatura As String
+Sub InserirAssinatura()
+    Dim objMail As MailItem
     
-    ' Cria uma nova instância do Outlook
-    Set olApp = CreateObject("Outlook.Application")
-    
-    ' Cria um novo e-mail
-    Set olMsg = olApp.CreateItem(0)
-    
-    ' Define a assinatura padrão
-    strAssinatura = olMsg.HTMLBody
-    
-    ' Insere a assinatura no final do corpo do e-mail
-    olMsg.HTMLBody = olMsg.HTMLBody & strAssinatura
-    
-    ' Exibe o e-mail
-    olMsg.Display
-    
-    ' Libera a memória dos objetos MailItem e Outlook
-    Set olMsg = Nothing
-    Set olApp = Nothing
+    ' Verifica se há um e-mail aberto
+    If Application.ActiveInspector.CurrentItem.Class = olMail Then
+        ' Obter o objeto MailItem do e-mail aberto
+        Set objMail = Application.ActiveInspector.CurrentItem
+        
+        ' Verifica se o corpo do e-mail não está vazio
+        If objMail.Body <> "" Then
+            ' Insere a assinatura no final do corpo do e-mail
+            objMail.HTMLBody = objMail.HTMLBody & objMail.HTMLBody
+        
+        Else ' Se o corpo do e-mail estiver vazio
+            ' Define a assinatura padrão
+            objMail.HTMLBody = objMail.HTMLBody
+        End If
+        
+    Else ' Se nenhum e-mail estiver aberto
+        MsgBox "Por favor, abra um e-mail e tente novamente.", vbExclamation
+        Exit Sub
+    End If
 End Sub
