@@ -1,20 +1,18 @@
-Dim celula As Range
-Dim valor As Variant
-Dim indice As Long
-indice = 0
-For Each celula In coluna
-    valor = celula.Value
-    If Not IsError(valor) Then 'ignora valores de erro
-        If IsEmpty(vetor) Then 'adiciona o primeiro valor
-            ReDim vetor(0)
-            vetor(0) = valor
-            indice = 1
-        ElseIf IsNumeric(Application.Match(valor, vetor, 0)) Then 'verifica se o valor já existe no vetor
-            'ignora valores duplicados
-        Else 'adiciona o valor único
-            ReDim Preserve vetor(indice)
-            vetor(indice) = valor
-            indice = indice + 1
-        End If
+Sub VerificarIgualdade()
+
+Dim nLinhas As Integer
+Dim i As Integer
+
+' Defina o número de linhas a verificar
+nLinhas = 10
+
+' Verifique se as células das colunas "B", "D", "E" e "G" possuem o mesmo valor em cada linha
+For i = 1 To nLinhas
+    If Cells(i, "B").Value = Cells(i, "D").Value And _
+       Cells(i, "D").Value = Cells(i, "E").Value And _
+       Cells(i, "E").Value = Cells(i, "G").Value Then
+        Debug.Print "As células das colunas B, D, E e G da linha " & i & " possuem o mesmo valor."
     End If
-Next celula
+Next i
+
+End Sub
