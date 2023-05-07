@@ -1,18 +1,18 @@
-Sub VerificarIgualdade()
-
-Dim nLinhas As Integer
-Dim i As Integer
-
-' Defina o número de linhas a verificar
-nLinhas = 10
-
-' Verifique se as células das colunas "B", "D", "E" e "G" possuem o mesmo valor em cada linha
-For i = 1 To nLinhas
-    If Cells(i, "B").Value = Cells(i, "D").Value And _
-       Cells(i, "D").Value = Cells(i, "E").Value And _
-       Cells(i, "E").Value = Cells(i, "G").Value Then
-        Debug.Print "As células das colunas B, D, E e G da linha " & i & " possuem o mesmo valor."
-    End If
-Next i
-
+Sub verificarValores()
+    Dim linhaInicial As Integer
+    Dim linhaFinal As Integer
+    Dim i As Integer
+    
+    'Define a linha inicial e final que deseja verificar
+    linhaInicial = 2 'altere para a linha desejada
+    linhaFinal = 10 'altere para a linha desejada
+    
+    For i = linhaInicial To linhaFinal - 1
+        If Range("B" & i).Value = Range("B" & i + 1).Value And _
+           Range("D" & i).Value = Range("D" & i + 1).Value And _
+           Range("E" & i).Value = Range("E" & i + 1).Value And _
+           Range("G" & i).Value = Range("G" & i + 1).Value Then
+            MsgBox "As células das colunas B, D, E e G na linha " & i & " são iguais às células da linha " & i + 1 & "."
+        End If
+    Next i
 End Sub
