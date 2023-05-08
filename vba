@@ -1,18 +1,12 @@
-Sub verificarValores()
-    Dim linhaInicial As Integer
-    Dim linhaFinal As Integer
-    Dim i As Integer
+Sub removerFiltro()
+    Dim planilha As Worksheet
+    Set planilha = ThisWorkbook.Worksheets("Planilha1") 'substitua "Planilha1" pelo nome da sua planilha
     
-    'Define a linha inicial e final que deseja verificar
-    linhaInicial = 2 'altere para a linha desejada
-    linhaFinal = 10 'altere para a linha desejada
-    
-    For i = linhaInicial To linhaFinal - 1
-        If Range("B" & i).Value = Range("B" & i + 1).Value And _
-           Range("D" & i).Value = Range("D" & i + 1).Value And _
-           Range("E" & i).Value = Range("E" & i + 1).Value And _
-           Range("G" & i).Value = Range("G" & i + 1).Value Then
-            MsgBox "As células das colunas B, D, E e G na linha " & i & " são iguais às células da linha " & i + 1 & "."
-        End If
-    Next i
+    'verifica se a planilha possui filtro ativado
+    If planilha.AutoFilterMode = True Then
+        'remove o filtro da coluna B
+        planilha.Range("B1").AutoFilter Field:=1
+        'remove o filtro da coluna D
+        planilha.Range("D1").AutoFilter Field:=4
+    End If
 End Sub
