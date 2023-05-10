@@ -1,4 +1,4 @@
-Sub EnviarEmail()
+Sub EnviarEmailComImagem()
 
 Dim olApp As Object
 Dim olMail As Object
@@ -18,11 +18,13 @@ With olMail
                 "</body></html>"
 End With
 
-' Inserir a assinatura
+' Inserir a assinatura com imagem
 SigString = Environ("appdata") & _
             "\Microsoft\Assinaturas\Nome_da_Assinatura.htm"
 If Dir(SigString) <> "" Then
     Signature = GetBoiler(SigString)
+    ' Substituir o texto da assinatura pela imagem
+    Signature = Replace(Signature, "Texto_da_Assinatura", "<img src='Caminho_da_Imagem'>")
     olMail.HTMLBody = olMail.HTMLBody & Signature
 End If
 
