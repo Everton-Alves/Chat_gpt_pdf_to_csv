@@ -1,50 +1,44 @@
-Sub ObterContatosDoGrupoMA()
-    Dim olApp As Outlook.Application
-    Dim olNamespace As Outlook.Namespace
-    Dim olFolder As Outlook.Folder
-    Dim olContactsFolder As Outlook.Folder
-    Dim olGroup As Outlook.DistListGroup
-    Dim olRecipient As Outlook.Recipient
-    Dim olSharedContacts As Outlook.Items
-    Dim olContact As Outlook.ContactItem
-    Dim contactString As String
+Sub ObterEmailsDoGrupo()
+    Dim olApp As Object 'Outlook.Application
+    Dim olNamespace As Object 'Outlook.Namespace
+    Dim olRecipient As Object 'Outlook.Recipient
+    Dim olAddressList As Object 'Outlook.AddressList
+    Dim olAddressEntry As Object 'Outlook.AddressEntry
+    Dim olExchangeUser As Object 'Outlook.ExchangeUser
+    Dim strEmails As String
     
-    ' Inicializar o Outlook
-    Set olApp = New Outlook.Application
+    ' Inicializa o objeto do Outlook
+    Set olApp = CreateObject("Outlook.Application")
     Set olNamespace = olApp.GetNamespace("MAPI")
     
-    ' Obter a pasta de contatos compartilhados
-    Set olFolder = olNamespace.GetSharedDefaultFolder(olApp.Session.CurrentUser, olFolderContacts)
-    Set olContactsFolder = olFolder.Folders("Contatos Compartilhados")
+    ' Define o endereço de e-mail do remetente
+    Set olRecipient = olNamespace.CreateRecipient("teste@teste.com")
     
-    ' Procurar o grupo "MA"
-    For Each olGroup In olContactsFolder.Items
-        If olGroup.Class = olDistributionList Then
-            If olGroup.DLName = "MA" Then
-                ' Encontrou o grupo "MA", percorrer os membros
-                Set olSharedContacts = olGroup.GetMembers
-                For Each olRecipient In olSharedContacts
-                    ' Verificar se o contato é compartilhado por "teste@teste.com"
-                    If olRecipient.Address = "teste@teste.com" Then
-                        ' Obter o contato completo
-                        Set olContact = olNamespace.GetItemFromID(olRecipient.EntryID)
-                        contactString = contactString & olContact.Email1Address & "; "
-                    End If
-                Next olRecipient
-                Exit For ' Encerrar o loop após encontrar o grupo "MA"
-            End If
+    ' Obtém a lista de contatos compartilhados pelo remetente
+    Set olAddressList = olNamespace.AddressLists("Contatos compartilhados")
+    Set olAddressEntry = olAddressList.AddressEntries.Item(olRecipient.Name)
+    Set olExchangeUser = olAddressEntry.GetExchangeUser
+    
+    ' Verifica cada contato no grupo "MA" e adiciona seu e-mail à string
+    For Each olAddressEntry In olExchangeUser.GetMemberOfList
+        If olAddressEntry.Name = "MA" Then
+            Dim olDistList As Object 'Outlook.DistListItem
+            Dim olMember As Object
+            
+            Set olDistList = olAddressEntry.GetExchangeDistributionList
+            For Each olMember In olDistList.Member
+                strEmails = strEmails & olMember.Address & ";"
+            Next olMember
+            
+            Exit For
         End If
-    Next olGroup
+    Next olAddressEntry
     
-    ' Exibir a string de contatos
-    MsgBox contactString
+    ' Remove o último ponto-e-vírgula da string, se existir
+    If Right(strEmails, 1) = ";" Then
+        strEmails = Left(strEmails, Len(strEmails) - 1)
+    End If
     
-    ' Limpar objetos
-    Set olContact = Nothing
-    Set olSharedContacts = Nothing
-    Set olGroup = Nothing
-    Set olContactsFolder = Nothing
-    Set olFolder = Nothing
-    Set olNamespace = Nothing
-    Set olApp = Nothing
+    ' Exibe a string de e-mails
+    MsgBox strEmails
 End Sub
