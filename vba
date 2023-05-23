@@ -1,43 +1,50 @@
-Sub ProcurarEmailsPorGrupo()
+Sub EncontrarEmailsPorGrupo()
     Dim objNamespace As Outlook.Namespace
     Dim objRecipient As Outlook.Recipient
     Dim objFolder As Outlook.Folder
     Dim objItems As Outlook.Items
-    Dim objDistList As Outlook.DistListItem
+    Dim objContactGroup As Outlook.DistListItem
+    Dim objContact As Outlook.ContactItem
+    Dim strEmail As String
     Dim strGroupName As String
     
-    ' Nome do grupo de contatos
+    ' Endereço de e-mail do destinatário compartilhado
+    strEmail = "teste@teste.com"
+    
+    ' Nome do grupo de contatos a ser procurado
     strGroupName = InputBox("Digite o nome do grupo de contatos:")
     
     ' Inicializar o objeto Namespace
     Set objNamespace = Outlook.Application.GetNamespace("MAPI")
     
     ' Obter o objeto Recipient
-    Set objRecipient = objNamespace.CreateRecipient("exemplo@dominio.com") ' Substitua pelo endereço de e-mail compartilhado
+    Set objRecipient = objNamespace.CreateRecipient(strEmail)
+    objRecipient.Resolve
     
     ' Verificar se o endereço de e-mail foi resolvido corretamente
     If objRecipient.Resolved Then
         ' Obter a pasta compartilhada
         Set objFolder = objNamespace.GetSharedDefaultFolder(objRecipient, olFolderContacts)
         
-        ' Obter todos os itens na pasta de contatos
+        ' Obter todos os itens na pasta
         Set objItems = objFolder.Items
         
         ' Percorrer todos os itens
-        For Each objDistList In objItems
+        For Each objContact In objItems
             ' Verificar se é um grupo de contatos
-            If TypeOf objDistList Is Outlook.DistListItem Then
-                ' Verificar se o nome do grupo corresponde ao fornecido
-                If objDistList.DLName = strGroupName Then
+            If TypeOf objContact Is Outlook.DistListItem Then
+                Set objContactGroup = objContact
+                
+                ' Verificar se o nome do grupo corresponde à entrada do usuário
+                If InStr(1, objContactGroup.DLName, strGroupName, vbTextCompare) > 0 Then
                     ' Exibir os e-mails do grupo de contatos
-                    Dim objMember As Outlook.Recipient
-                    For Each objMember In objDistList.MemberObjects
-                        MsgBox "Nome: " & objMember.Name & vbCrLf & "E-mail: " & objMember.Address
-                    Next objMember
-                    Exit Sub ' Sair do loop assim que o grupo for encontrado
+                    For Each Member In objContactGroup.MemberCount
+                        MsgBox objContactGroup.GetMember(Member).Address
+                    Next Member
+                    Exit Sub
                 End If
             End If
-        Next objDistList
+        Next objContact
         
         ' O grupo de contatos não foi encontrado
         MsgBox "Grupo de contatos não encontrado."
@@ -47,7 +54,7 @@ Sub ProcurarEmailsPorGrupo()
     End If
     
     ' Limpar a memória
-    Set objDistList = Nothing
+    Set objContact = Nothing
     Set objItems = Nothing
     Set objFolder = Nothing
     Set objRecipient = Nothing
