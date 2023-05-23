@@ -1,11 +1,12 @@
-Sub ObterEmailsDoGrupo()
+Sub ObterContatosCompartilhados()
     Dim olApp As Object 'Outlook.Application
     Dim olNamespace As Object 'Outlook.Namespace
     Dim olRecipient As Object 'Outlook.Recipient
     Dim olAddressList As Object 'Outlook.AddressList
     Dim olAddressEntry As Object 'Outlook.AddressEntry
     Dim olExchangeUser As Object 'Outlook.ExchangeUser
-    Dim strEmails As String
+    Dim olSharedContactsFolder As Object 'Outlook.Folder
+    Dim olContact As Object 'Outlook.ContactItem
     
     ' Inicializa o objeto do Outlook
     Set olApp = CreateObject("Outlook.Application")
@@ -19,26 +20,21 @@ Sub ObterEmailsDoGrupo()
     Set olAddressEntry = olAddressList.AddressEntries.Item(olRecipient.Name)
     Set olExchangeUser = olAddressEntry.GetExchangeUser
     
-    ' Verifica cada contato no grupo "MA" e adiciona seu e-mail à string
-    For Each olAddressEntry In olExchangeUser.GetMemberOfList
-        If olAddressEntry.Name = "MA" Then
-            Dim olDistList As Object 'Outlook.DistListItem
-            Dim olMember As Object
-            
-            Set olDistList = olAddressEntry.GetExchangeDistributionList
-            For Each olMember In olDistList.Member
-                strEmails = strEmails & olMember.Address & ";"
-            Next olMember
-            
-            Exit For
-        End If
-    Next olAddressEntry
+    ' Obtém a pasta de contatos compartilhados
+    Set olSharedContactsFolder = olNamespace.GetSharedDefaultFolder(olExchangeUser, 10) ' 10 = OlDefaultFolders.olFolderContacts
     
-    ' Remove o último ponto-e-vírgula da string, se existir
-    If Right(strEmails, 1) = ";" Then
-        strEmails = Left(strEmails, Len(strEmails) - 1)
-    End If
+    ' Percorre os contatos compartilhados e exibe seus nomes
+    For Each olContact In olSharedContactsFolder.Items
+        Debug.Print olContact.FullName
+    Next olContact
     
-    ' Exibe a string de e-mails
-    MsgBox strEmails
+    ' Limpa os objetos
+    Set olContact = Nothing
+    Set olSharedContactsFolder = Nothing
+    Set olExchangeUser = Nothing
+    Set olAddressEntry = Nothing
+    Set olAddressList = Nothing
+    Set olRecipient = Nothing
+    Set olNamespace = Nothing
+    Set olApp = Nothing
 End Sub
