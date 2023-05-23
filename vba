@@ -1,62 +1,50 @@
-Sub EncontrarEmailsPorGrupo()
-    Dim objNamespace As Outlook.Namespace
-    Dim objRecipient As Outlook.Recipient
-    Dim objFolder As Outlook.Folder
-    Dim objItems As Outlook.Items
-    Dim objContactGroup As Outlook.DistListItem
-    Dim objContact As Outlook.ContactItem
-    Dim strEmail As String
-    Dim strGroupName As String
+Sub ObterContatosDoGrupoMA()
+    Dim olApp As Outlook.Application
+    Dim olNamespace As Outlook.Namespace
+    Dim olFolder As Outlook.Folder
+    Dim olContactsFolder As Outlook.Folder
+    Dim olGroup As Outlook.DistListGroup
+    Dim olRecipient As Outlook.Recipient
+    Dim olSharedContacts As Outlook.Items
+    Dim olContact As Outlook.ContactItem
+    Dim contactString As String
     
-    ' Endereço de e-mail do destinatário compartilhado
-    strEmail = "teste@teste.com"
+    ' Inicializar o Outlook
+    Set olApp = New Outlook.Application
+    Set olNamespace = olApp.GetNamespace("MAPI")
     
-    ' Nome do grupo de contatos a ser procurado
-    strGroupName = InputBox("Digite o nome do grupo de contatos:")
+    ' Obter a pasta de contatos compartilhados
+    Set olFolder = olNamespace.GetSharedDefaultFolder(olApp.Session.CurrentUser, olFolderContacts)
+    Set olContactsFolder = olFolder.Folders("Contatos Compartilhados")
     
-    ' Inicializar o objeto Namespace
-    Set objNamespace = Outlook.Application.GetNamespace("MAPI")
-    
-    ' Obter o objeto Recipient
-    Set objRecipient = objNamespace.CreateRecipient(strEmail)
-    objRecipient.Resolve
-    
-    ' Verificar se o endereço de e-mail foi resolvido corretamente
-    If objRecipient.Resolved Then
-        ' Obter a pasta compartilhada
-        Set objFolder = objNamespace.GetSharedDefaultFolder(objRecipient, olFolderContacts)
-        
-        ' Obter todos os itens na pasta
-        Set objItems = objFolder.Items
-        
-        ' Percorrer todos os itens
-        For Each objContact In objItems
-            ' Verificar se é um grupo de contatos
-            If TypeOf objContact Is Outlook.DistListItem Then
-                Set objContactGroup = objContact
-                
-                ' Verificar se o nome do grupo corresponde à entrada do usuário
-                If InStr(1, objContactGroup.DLName, strGroupName, vbTextCompare) > 0 Then
-                    ' Exibir os e-mails do grupo de contatos
-                    For Each Member In objContactGroup.MemberCount
-                        MsgBox objContactGroup.GetMember(Member).Address
-                    Next Member
-                    Exit Sub
-                End If
+    ' Procurar o grupo "MA"
+    For Each olGroup In olContactsFolder.Items
+        If olGroup.Class = olDistributionList Then
+            If olGroup.DLName = "MA" Then
+                ' Encontrou o grupo "MA", percorrer os membros
+                Set olSharedContacts = olGroup.GetMembers
+                For Each olRecipient In olSharedContacts
+                    ' Verificar se o contato é compartilhado por "teste@teste.com"
+                    If olRecipient.Address = "teste@teste.com" Then
+                        ' Obter o contato completo
+                        Set olContact = olNamespace.GetItemFromID(olRecipient.EntryID)
+                        contactString = contactString & olContact.Email1Address & "; "
+                    End If
+                Next olRecipient
+                Exit For ' Encerrar o loop após encontrar o grupo "MA"
             End If
-        Next objContact
-        
-        ' O grupo de contatos não foi encontrado
-        MsgBox "Grupo de contatos não encontrado."
-    Else
-        ' O endereço de e-mail não foi resolvido corretamente
-        MsgBox "Endereço de e-mail inválido."
-    End If
+        End If
+    Next olGroup
     
-    ' Limpar a memória
-    Set objContact = Nothing
-    Set objItems = Nothing
-    Set objFolder = Nothing
-    Set objRecipient = Nothing
-    Set objNamespace = Nothing
+    ' Exibir a string de contatos
+    MsgBox contactString
+    
+    ' Limpar objetos
+    Set olContact = Nothing
+    Set olSharedContacts = Nothing
+    Set olGroup = Nothing
+    Set olContactsFolder = Nothing
+    Set olFolder = Nothing
+    Set olNamespace = Nothing
+    Set olApp = Nothing
 End Sub
