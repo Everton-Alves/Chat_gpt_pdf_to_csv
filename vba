@@ -1,28 +1,46 @@
-Sub EnviarEmailComRange(rng As Range)
-
-    Dim olApp As Object
-    Dim olMail As Object
+Sub EncontrarEmailsCompartilhados()
+    Dim objNamespace As Outlook.Namespace
+    Dim objRecipient As Outlook.Recipient
+    Dim objFolder As Outlook.Folder
+    Dim objItems As Outlook.Items
+    Dim objMail As Outlook.MailItem
+    Dim strEmail As String
     
-    ' Cria uma nova instância do Outlook
-    Set olApp = CreateObject("Outlook.Application")
+    ' Endereço de e-mail do destinatário compartilhado
+    strEmail = "exemplo@dominio.com"
     
-    ' Cria um novo e-mail
-    Set olMail = olApp.CreateItem(olMailItem)
+    ' Inicializar o objeto Namespace
+    Set objNamespace = Outlook.Application.GetNamespace("MAPI")
     
-    ' Copia o conteúdo do range para a área de transferência
-    rng.Copy
+    ' Obter o objeto Recipient
+    Set objRecipient = objNamespace.CreateRecipient(strEmail)
+    objRecipient.Resolve
     
-    ' Cola o conteúdo no corpo do e-mail
-    olMail.GetInspector.WordEditor.Range.PasteAndFormat wdFormatOriginalFormatting
+    ' Verificar se o endereço de e-mail foi resolvido corretamente
+    If objRecipient.Resolved Then
+        ' Obter a pasta compartilhada
+        Set objFolder = objNamespace.GetSharedDefaultFolder(objRecipient, olFolderInbox)
+        
+        ' Obter todos os itens na pasta
+        Set objItems = objFolder.Items
+        
+        ' Percorrer todos os itens
+        For Each objMail In objItems
+            ' Verificar se é um e-mail
+            If TypeOf objMail Is Outlook.MailItem Then
+                ' Fazer algo com o e-mail encontrado
+                MsgBox "Assunto: " & objMail.Subject & vbCrLf & "Remetente: " & objMail.SenderEmailAddress
+            End If
+        Next objMail
+    Else
+        ' O endereço de e-mail não foi resolvido corretamente
+        MsgBox "Endereço de e-mail inválido."
+    End If
     
-    ' Mostra o e-mail para o usuário
-    olMail.Display
-    
-    ' Limpa a área de transferência
-    Application.CutCopyMode = False
-    
-    ' Libera as referências do Outlook
-    Set olMail = Nothing
-    Set olApp = Nothing
-
+    ' Limpar a memória
+    Set objMail = Nothing
+    Set objItems = Nothing
+    Set objFolder = Nothing
+    Set objRecipient = Nothing
+    Set objNamespace = Nothing
 End Sub
