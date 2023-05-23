@@ -1,44 +1,56 @@
-Sub EncontrarEmailsCompartilhados()
+Sub ProcurarEmailsCompartilhados()
     Dim objNamespace As Outlook.Namespace
     Dim objRecipient As Outlook.Recipient
     Dim objFolder As Outlook.Folder
     Dim objItems As Outlook.Items
-    Dim objMail As Outlook.MailItem
-    Dim strEmail As String
+    Dim objContact As Outlook.ContactItem
+    Dim strNome As String
+    Dim strEmails As String
     
-    ' Endereço de e-mail do destinatário compartilhado
-    strEmail = "exemplo@dominio.com"
+    ' Nome a ser procurado
+    strNome = InputBox("Digite o nome a ser pesquisado:", "Procurar E-mails Compartilhados")
     
     ' Inicializar o objeto Namespace
     Set objNamespace = Outlook.Application.GetNamespace("MAPI")
     
-    ' Obter o objeto Recipient
-    Set objRecipient = objNamespace.CreateRecipient(strEmail)
+    ' Obter a pasta de contatos compartilhada
+    Set objRecipient = objNamespace.CreateRecipient("exemplo@dominio.com") ' Substitua pelo e-mail do contato compartilhado
     objRecipient.Resolve
     
-    ' Verificar se o endereço de e-mail foi resolvido corretamente
     If objRecipient.Resolved Then
-        ' Obter a pasta compartilhada
-        Set objFolder = objNamespace.GetSharedDefaultFolder(objRecipient, olFolderInbox)
+        Set objFolder = objNamespace.GetSharedDefaultFolder(objRecipient, olFolderContacts)
         
-        ' Obter todos os itens na pasta
+        ' Obter todos os itens na pasta de contatos
         Set objItems = objFolder.Items
         
-        ' Percorrer todos os itens
-        For Each objMail In objItems
-            ' Verificar se é um e-mail
-            If TypeOf objMail Is Outlook.MailItem Then
-                ' Fazer algo com o e-mail encontrado
-                MsgBox "Assunto: " & objMail.Subject & vbCrLf & "Remetente: " & objMail.SenderEmailAddress
+        ' Limpar a string de e-mails
+        strEmails = ""
+        
+        ' Percorrer todos os contatos
+        For Each objContact In objItems
+            ' Verificar se é um contato
+            If TypeOf objContact Is Outlook.ContactItem Then
+                ' Verificar se o nome corresponde à pesquisa
+                If InStr(1, objContact.FullName, strNome, vbTextCompare) > 0 Then
+                    ' Adicionar o e-mail do contato à string
+                    strEmails = strEmails & objContact.Email1Address & vbCrLf
+                End If
             End If
-        Next objMail
+        Next objContact
+        
+        ' Exibir os e-mails encontrados
+        If Len(strEmails) > 0 Then
+            MsgBox "E-mails encontrados:" & vbCrLf & strEmails
+        Else
+            MsgBox "Nenhum e-mail encontrado com o nome especificado."
+        End If
     Else
         ' O endereço de e-mail não foi resolvido corretamente
         MsgBox "Endereço de e-mail inválido."
     End If
     
     ' Limpar a memória
-    Set objMail = Nothing
+    Set objContact = Nothing
     Set objItems = Nothing
     Set objFolder = Nothing
     Set objRecipient = Nothing
