@@ -1,17 +1,19 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
-# Configurar o driver do Selenium (neste exemplo, estou usando o ChromeDriver)
+# Inicializar o driver do Selenium
 driver = webdriver.Chrome()
 
-# Abrir o site ou página onde está o elemento que você deseja clicar
-driver.get("https://www.example.com")
+# Abrir a página
+driver.get("URL_DA_PAGINA")
 
-# Localizar o elemento pelo texto
-element = driver.find_element(By.XPATH, "//a[contains(text(), 'Módulo de Relatórios')]")
+# Esperar até que o elemento esteja visível
+elemento = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.LINK_TEXT, "Módulo de Relatórios")))
 
 # Clicar no elemento
-element.click()
+elemento.click()
 
 # Fechar o navegador
 driver.quit()
