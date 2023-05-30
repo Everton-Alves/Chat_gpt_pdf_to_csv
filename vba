@@ -10,7 +10,7 @@ driver = webdriver.Chrome()
 driver.get("URL_DA_PAGINA")
 
 # Esperar até que o elemento esteja visível
-elemento = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.LINK_TEXT, "Módulo de Relatórios")))
+elemento = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//a[@class='level2 dynamic' and @href='/wh/NetReport/report-type.aspx']")))
 
 # Clicar no elemento
 elemento.click()
