@@ -1,21 +1,16 @@
-Sub ExecutarScriptPython()
-    Dim numero As Integer
-    
-    ' Definir o número desejado
-    numero = 456
-    
-    ' Caminho para o interpretador Python
-    Dim pythonPath As String
-    pythonPath = "Caminho_para_o_python.exe" ' Substitua pelo caminho correto para o interpretador Python
+from selenium import webdriver
 
-    ' Caminho para o script Python
-    Dim scriptPath As String
-    scriptPath = "Caminho_para_o_script_python.py" ' Substitua pelo caminho correto para o script Python
+# Configurar o driver do Selenium (nesse exemplo, estou usando o ChromeDriver)
+driver = webdriver.Chrome()
 
-    ' Comando para executar o script Python com o número como parâmetro
-    Dim command As String
-    command = pythonPath & " " & scriptPath & " " & numero
+# Abrir o site ou página onde está o elemento que você deseja clicar
+driver.get("https://www.example.com")
 
-    ' Executar o script Python
-    Shell(command, vbNormalFocus)
-End Sub
+# Localizar o elemento pelo atributo tabindex e pelo texto
+element = driver.find_element_by_xpath("//a[@tabindex='-1' and contains(text(), 'Modulo de Relatórios')]")
+
+# Clicar no elemento
+element.click()
+
+# Fechar o navegador
+driver.quit()
