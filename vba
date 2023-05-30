@@ -4,16 +4,21 @@ Sub ExecutarScriptPython()
     ' Definir o número desejado
     numero = 456
 
-    ' Importar o módulo py
-    Dim py As Object
-    Set py = VBA.CreateObject("pythontools.console")
+    ' Crie um objeto WshShell
+    Dim shell As Object
+    Set shell = CreateObject("WScript.Shell")
 
-    ' Executar o script Python passando o número como parâmetro
-    py.ExecStatement "import sys"
-    py.ExecStatement "sys.argv = ['', '" & CStr(numero) & "']"
-    py.ExecScript "caminho_para_o_script_python.py"
+    ' Caminho para o script Python
+    Dim scriptPath As String
+    scriptPath = "caminho_para_o_script_python.py" ' Substitua pelo caminho correto para o script Python
 
-    ' Liberar o objeto py
-    Set py = Nothing
+    ' Comando para executar o script Python com o número como parâmetro
+    Dim command As String
+    command = "python " & scriptPath & " " & CStr(numero)
+
+    ' Executar o comando no prompt de comando
+    shell.Run command, vbHide
+
+    ' Liberar o objeto shell
+    Set shell = Nothing
 End Sub
-
