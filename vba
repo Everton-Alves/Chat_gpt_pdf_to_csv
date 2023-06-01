@@ -35,13 +35,15 @@ while True:
         checkbox.click()
 
     # Verificar se há um próximo número para clicar
-    numero_atual_elemento = driver.find_element(By.XPATH, 'xpath_do_elemento_numero_atual')
-    numero_atual = int(numero_atual_elemento.text)
-    if numero_atual >= numero_total:
+    proximo_numero_elemento = None
+    try:
+        # Encontrar o próximo número dinamicamente
+        proximo_numero_elemento = driver.find_element(By.XPATH, f'//span[contains(text(), "{numero_atual + 1}")]')
+    except:
+        # Se não houver próximo número, sair do loop
         break
 
     # Clicar no próximo número para alterar a tabela
-    proximo_numero_elemento = driver.find_element(By.XPATH, 'xpath_do_proximo_numero')
     proximo_numero_elemento.click()
 
     # Aguardar até que a tabela seja atualizada
