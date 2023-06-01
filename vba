@@ -6,14 +6,19 @@ from selenium.webdriver.support import expected_conditions as EC
 # Inicializar o driver do Selenium
 driver = webdriver.Chrome()
 
-# Abrir a página
-driver.get("URL_DA_PAGINA")
+# Abrir a página web
+driver.get("https://www.exemplo.com")
 
-# Esperar até que o elemento esteja visível
-elemento = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//a[@class='level2 dynamic' and @href='/wh/NetReport/report-type.aspx']")))
+# Esperar até que a tabela seja carregada
+wait = WebDriverWait(driver, 10)
+tabela = wait.until(EC.presence_of_element_located((By.ID, "id-da-tabela")))
 
-# Clicar no elemento
-elemento.click()
+# Encontrar todos os checkboxes dentro da tabela
+checkboxes = tabela.find_elements(By.XPATH, "//input[@type='checkbox']")
 
-# Fechar o navegador
+# Clicar em todos os checkboxes
+for checkbox in checkboxes:
+    checkbox.click()
+
+# Fechar o driver do Selenium
 driver.quit()
