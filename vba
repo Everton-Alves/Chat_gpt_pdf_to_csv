@@ -13,12 +13,12 @@ driver.get('url_da_pagina_inicial')
 # Realizar interações para acessar a página com a tabela
 # ...
 
-# Encontrar o elemento que leva à página com a tabela e clicar nele
-elemento_link = wait.until(EC.presence_of_element_located((By.ID, 'id_do_elemento_link')))
-elemento_link.click()
-
 # Aguardar até que a tabela seja carregada
 wait.until(EC.presence_of_element_located((By.XPATH, 'xpath_da_tabela')))
+
+# Obter o número total da tabela
+numero_total_elemento = driver.find_element(By.XPATH, 'xpath_do_elemento_numero_total')
+numero_total = int(numero_total_elemento.text)
 
 # Definir uma lista para armazenar os IDs dos checkboxes
 ids_relacionados = []
@@ -35,18 +35,17 @@ while True:
         checkbox.click()
 
     # Verificar se há um próximo número para clicar
-    try:
-        # Encontrar o próximo número
-        proximo_numero = driver.find_element(By.XPATH, 'xpath_do_proximo_numero')
-        
-        # Clicar no próximo número para alterar a tabela
-        proximo_numero.click()
-        
-        # Aguardar até que a tabela seja atualizada
-        wait.until(EC.staleness_of(checkboxes[0]))
-    except:
-        # Se não houver próximo número, sair do loop
+    numero_atual_elemento = driver.find_element(By.XPATH, 'xpath_do_elemento_numero_atual')
+    numero_atual = int(numero_atual_elemento.text)
+    if numero_atual >= numero_total:
         break
+
+    # Clicar no próximo número para alterar a tabela
+    proximo_numero_elemento = driver.find_element(By.XPATH, 'xpath_do_proximo_numero')
+    proximo_numero_elemento.click()
+
+    # Aguardar até que a tabela seja atualizada
+    wait.until(EC.staleness_of(checkboxes[0]))
 
 # Fechar o navegador
 driver.quit()
