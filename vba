@@ -3,22 +3,22 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-# Inicializar o driver do Selenium
+# Configurar o driver do Selenium (certifique-se de ter o chromedriver instalado e no PATH)
 driver = webdriver.Chrome()
 
-# Abrir a página web
-driver.get("https://www.exemplo.com")
+# Navegar até a página com a tabela
+driver.get("URL_DA_PAGINA")
 
-# Esperar até que a tabela seja carregada
+# Aguardar até que a tabela seja carregada (usando uma espera explícita)
 wait = WebDriverWait(driver, 10)
-tabela = wait.until(EC.presence_of_element_located((By.ID, "id-da-tabela")))
+table = wait.until(EC.presence_of_element_located((By.ID, "ID_DA_TABELA")))
 
-# Encontrar todos os checkboxes dentro da tabela
-checkboxes = tabela.find_elements(By.XPATH, "//input[@type='checkbox']")
+# Localizar todos os checkboxes dentro da tabela
+checkboxes = table.find_elements(By.TAG_NAME, "input[type='checkbox']")
 
-# Clicar em todos os checkboxes
+# Iterar sobre os checkboxes e clicar em cada um
 for checkbox in checkboxes:
     checkbox.click()
 
-# Fechar o driver do Selenium
+# Fechar o navegador
 driver.quit()
