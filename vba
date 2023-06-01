@@ -20,19 +20,36 @@ elemento_link.click()
 # Aguardar até que a tabela seja carregada
 wait.until(EC.presence_of_element_located((By.XPATH, 'xpath_da_tabela')))
 
-# Encontrar todos os checkboxes dentro da tabela usando XPath
-checkboxes = driver.find_elements(By.XPATH, 'xpath_da_tabela//input[@type="checkbox"]')
+# Definir uma lista para armazenar os IDs dos checkboxes
+ids_relacionados = []
 
-# Extrair os IDs dos checkboxes
-ids_relacionados = [checkbox.get_attribute('id') for checkbox in checkboxes]
+while True:
+    # Localizar todos os checkboxes dentro da tabela usando XPath
+    checkboxes = driver.find_elements(By.XPATH, 'xpath_da_tabela//input[@type="checkbox"]')
 
-# Iterar sobre os IDs relacionados e clicar nos checkboxes correspondentes
-for id_relacionado in ids_relacionados:
-    # Encontrar o checkbox com base no ID relacionado usando XPath
-    checkbox = driver.find_element(By.XPATH, f'//input[@type="checkbox" and @id="{id_relacionado}"]')
-    
-    # Clicar no checkbox
-    checkbox.click()
+    # Extrair os IDs dos checkboxes e armazenar na lista
+    ids_relacionados.extend([checkbox.get_attribute('id') for checkbox in checkboxes])
+
+    # Clicar em todos os checkboxes da tabela
+    for checkbox in checkboxes:
+        checkbox.click()
+
+    # Verificar se há um próximo número para clicar
+    try:
+        # Encontrar o próximo número
+        proximo_numero = driver.find_element(By.XPATH, 'xpath_do_proximo_numero')
+        
+        # Clicar no próximo número para alterar a tabela
+        proximo_numero.click()
+        
+        # Aguardar até que a tabela seja atualizada
+        wait.until(EC.staleness_of(checkboxes[0]))
+    except:
+        # Se não houver próximo número, sair do loop
+        break
 
 # Fechar o navegador
 driver.quit()
+
+# Exibir os IDs dos checkboxes armazenados
+print(ids_relacionados)
