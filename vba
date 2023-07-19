@@ -1,55 +1,34 @@
-Sub DescompactarZipComSenha()
-    Dim ZipFileName As String
-    Dim DestFolder As String
-    Dim ShellApp As Object
-    Dim ZipFile As Object
-    Dim ZipFolder As Object
-    Dim Password As String
+Sub RetornarLinhaAnteriorAoTeste()
+    Dim texto As String
+    Dim linhasTexto() As String
+    Dim i As Integer
+    Dim posicaoTeste As Integer
+    Dim linhaAnterior As String
     
-    ' Defina o caminho do arquivo zip e a senha
-    ZipFileName = "C:\Caminho\para\seu\arquivo.zip"
-    DestFolder = "C:\Caminho\para\destino\da\descompactacao\"
-    Password = "123"
+    ' Substitua o texto abaixo pelo texto completo onde deseja procurar a palavra "teste"
+    texto = "Esta é a primeira linha. A palavra teste ocorre nesta linha. Esta é a linha anterior."
     
-    ' Criar objetos Shell
-    Set ShellApp = CreateObject("Shell.Application")
-    Set ZipFile = ShellApp.Namespace(ZipFileName)
+    ' Separar o texto em linhas
+    linhasTexto = Split(texto, vbNewLine)
     
-    ' Verificar se o arquivo zip existe e é válido
-    If ZipFile Is Nothing Then
-        MsgBox "Arquivo zip não encontrado ou inválido.", vbExclamation
-        Exit Sub
-    End If
+    ' Procurar a posição da palavra "teste" nas linhas do texto
+    For i = LBound(linhasTexto) To UBound(linhasTexto)
+        posicaoTeste = InStr(1, linhasTexto(i), "teste", vbTextCompare)
+        If posicaoTeste > 0 Then
+            ' Encontrou a palavra "teste" na linha i
+            If i > LBound(linhasTexto) Then
+                ' A linha anterior existe
+                linhaAnterior = linhasTexto(i - 1)
+                MsgBox "Linha anterior à palavra 'teste': " & linhaAnterior
+                Exit Sub
+            Else
+                ' A palavra "teste" está na primeira linha do texto
+                MsgBox "Não há linha anterior à palavra 'teste'. A palavra está na primeira linha."
+                Exit Sub
+            End If
+        End If
+    Next i
     
-    ' Definir destino para descompactar o arquivo zip
-    If Right(DestFolder, 1) <> "\" Then
-        DestFolder = DestFolder & "\"
-    End If
-    
-    ' Criar pasta de destino, se não existir
-    If Not FolderExists(DestFolder) Then
-        MkDir DestFolder
-    End If
-    
-    ' Descompactar o arquivo zip com a senha fornecida
-    Set ZipFolder = ShellApp.Namespace(DestFolder)
-    ZipFolder.CopyHere ZipFile.Items, 4 ' 4 significa substituir os arquivos existentes
-    
-    ' Aguardar até que o processo de descompactação seja concluído
-    On Error Resume Next
-    Do Until ZipFolder.Items.Count = ZipFile.Items.Count
-        Application.Wait (Now + TimeValue("0:00:01"))
-    Loop
-    On Error GoTo 0
-    
-    ' Liberar os objetos
-    Set ZipFile = Nothing
-    Set ZipFolder = Nothing
-    Set ShellApp = Nothing
-    
-    MsgBox "Descompactação concluída!", vbInformation
+    ' A palavra "teste" não foi encontrada em nenhuma linha do texto
+    MsgBox "Palavra 'teste' não encontrada no texto."
 End Sub
-
-Function FolderExists(FolderPath As String) As Boolean
-    FolderExists = (Dir(FolderPath, vbDirectory) <> "")
-End Function
