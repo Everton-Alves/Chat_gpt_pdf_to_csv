@@ -16,9 +16,9 @@ try:
     # Abre a página
     driver.get(url)
 
-    # Espera até que o elemento com class="btn" esteja presente e visível
+    # Espera até que o elemento com class="btn" e type="submit" esteja presente e visível
     elemento_btn = WebDriverWait(driver, tempo_max_espera).until(
-        EC.element_to_be_clickable((By.CLASS_NAME, "btn"))
+        EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.btn[type="submit"]'))
     )
 
     # Clica no elemento
