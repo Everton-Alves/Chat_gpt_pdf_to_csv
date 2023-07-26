@@ -13,24 +13,29 @@ try:
     # Encontra o elemento do combobox
     combobox = driver.find_element_by_name("Carteira")
 
-    # Encontra todos os elementos option dentro do combobox
+    # Encontra todas as opções do combobox
     opcoes = combobox.find_elements_by_tag_name("option")
 
-    # Número total de elementos no combobox
-    numero_de_opcoes = len(opcoes)
+    # Lista para armazenar os valores e textos das opções
+    valores_e_textos = []
 
-    # Laço de repetição para interagir com cada elemento do combobox
-    for i in range(numero_de_opcoes):
-        # Clica na opção do combobox pelo índice
-        opcoes[i].click()
+    # Armazena os valores e textos das opções na lista
+    for opcao in opcoes:
+        valor = opcao.get_attribute("value")
+        texto = opcao.text
+        valores_e_textos.append((valor, texto))
+
+    # Laço de repetição para clicar em cada elemento do combobox
+    for valor, texto in valores_e_textos:
+        # Clica na opção do combobox pelo valor
+        combobox.click()
+        combobox.find_element_by_xpath(f"option[@value='{valor}']").click()
 
         # Continue a automação com a opção selecionada, por exemplo, clique em um botão, envie formulários, etc.
         # ...
         
         # Imprime o valor e o texto da opção atual (opcional)
-        valor = opcoes[i].get_attribute("value")
-        texto = opcoes[i].text
-        print(f"Opção {i+1}: Valor={valor}, Texto={texto}")
+        print(f"Valor: {valor}, Texto: {texto}")
 
     # Fechar o navegador após a automação (opcional)
     driver.quit()
