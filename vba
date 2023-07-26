@@ -1,40 +1,38 @@
-import time
-import os
 from selenium import webdriver
-from pySmartDL import SmartDL
 
 # Inicialize o WebDriver (por exemplo, para o Chrome)
 driver = webdriver.Chrome()
 
-# URL da página onde está o botão de download
+# URL da página onde está o combobox
 url = "https://www.example.com"
 
 try:
     # Abre a página
     driver.get(url)
 
-    # Localize o botão de download e clique nele
-    botao_download = driver.find_element_by_id("botao_download_id")
-    botao_download.click()
+    # Encontra o elemento do combobox
+    combobox = driver.find_element_by_name("Carteira")
 
-    # Aguarda o download ser iniciado (ajuste o tempo de espera conforme necessário)
-    time.sleep(5)
+    # Encontra todos os elementos option dentro do combobox
+    opcoes = combobox.find_elements_by_tag_name("option")
 
-    # Obtém o caminho do arquivo de download definido pelo navegador
-    caminho_download = driver.execute_script("return window.navigator.userAgent")
+    # Número total de elementos no combobox
+    numero_de_opcoes = len(opcoes)
 
-    # Aguarda o download ser concluído
-    # Apenas exemplo, o tempo de espera pode variar, e pode não ser a melhor abordagem em todos os casos
-    while not caminho_download.endswith(".crdownload"):
-        time.sleep(1)
-        caminho_download = driver.execute_script("return window.navigator.userAgent")
+    # Laço de repetição para interagir com cada elemento do combobox
+    for i in range(numero_de_opcoes):
+        # Clica na opção do combobox pelo índice
+        opcoes[i].click()
 
-    # Espera o download ser concluído usando pySmartDL
-    destino_download = "/caminho/do/diretorio/de/destino/"  # Insira o caminho do diretório onde deseja salvar o arquivo baixado
-    smart_dl = SmartDL(caminho_download, progress_bar=False, dest=destino_download)
-    smart_dl.wait_for_finish()
+        # Continue a automação com a opção selecionada, por exemplo, clique em um botão, envie formulários, etc.
+        # ...
+        
+        # Imprime o valor e o texto da opção atual (opcional)
+        valor = opcoes[i].get_attribute("value")
+        texto = opcoes[i].text
+        print(f"Opção {i+1}: Valor={valor}, Texto={texto}")
 
-    # Fechar o navegador após o download (opcional)
+    # Fechar o navegador após a automação (opcional)
     driver.quit()
 
 except Exception as e:
