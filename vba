@@ -1,18 +1,40 @@
 from selenium import webdriver
-from selenium.webdriver.support.ui import Select
 
+# Inicialize o WebDriver (por exemplo, para o Chrome)
 driver = webdriver.Chrome()
-driver.get("https://www.example.com/")
 
-# Find the combobox
-combobox = driver.find_element_by_id("combobox")
+# URL da página onde está o combobox
+url = "https://www.example.com"
 
-# Get the number of elements in the combobox
-num_elements = len(combobox.find_elements_by_tag_name("option"))
+try:
+    # Abre a página
+    driver.get(url)
 
-# Iterate over the elements in the combobox
-for i in range(num_elements):
-    # Click on the element
-    combobox.find_element_by_xpath("//option[%d]" % i).click()
+    # Encontra o elemento do combobox pelo atributo 'name'
+    combobox = driver.find_element_by_name("carteira")
 
-driver.quit()
+    # Encontra todas as opções do combobox
+    opcoes = combobox.find_elements_by_tag_name("option")
+
+    # Laço de repetição para clicar em cada elemento do combobox
+    for opcao in opcoes:
+        # Obtém o valor e o texto de cada opção
+        valor = opcao.get_attribute("value")
+        texto = opcao.text
+
+        # Clica na opção do combobox pelo texto da opção
+        combobox.click()
+        driver.find_element_by_xpath(f"//option[text()='{texto}']").click()
+
+        # Continue a automação com a opção selecionada, por exemplo, clique em um botão, envie formulários, etc.
+        # ...
+        
+        # Imprime o valor e o texto da opção atual (opcional)
+        print(f"Valor: {valor}, Texto: {texto}")
+
+    # Fechar o navegador após a automação (opcional)
+    driver.quit()
+
+except Exception as e:
+    print(f"Erro: {e}")
+    driver.quit()
