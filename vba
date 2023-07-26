@@ -1,30 +1,43 @@
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
+import time
 
 # Inicialize o WebDriver (por exemplo, para o Chrome)
 driver = webdriver.Chrome()
 
-# URL da página onde está o elemento
+# URL da página onde está o botão
 url = "https://www.example.com"
 
 try:
     # Abre a página
     driver.get(url)
 
-    # Aguarda até que o elemento esteja presente e visível (ajuste o tempo máximo conforme a necessidade)
-    tempo_max_espera = 10
-    elemento = WebDriverWait(driver, tempo_max_espera).until(
-        EC.visibility_of_element_located((By.ID, "elemento_id"))
-    )
+    # Clique no botão que abre uma nova aba
+    botao = driver.find_element_by_id("botao_id")
+    botao.click()
 
-    # Move o mouse sobre o elemento
-    acoes_do_mouse = ActionChains(driver)
-    acoes_do_mouse.move_to_element(elemento).perform()
+    # Aguarde um tempo para garantir que a nova aba seja aberta (ajuste conforme a necessidade)
+    time.sleep(2)
 
-    # Fechar o navegador após a interação (opcional)
+    # Troque o foco para a nova aba (a janela de índice 1)
+    driver.switch_to.window(driver.window_handles[1])
+
+    # Continue a automação na nova aba
+    # Por exemplo, localize e interaja com elementos na nova aba:
+    novo_elemento = driver.find_element_by_xpath("//seu/xpath/here")
+    novo_elemento.click()
+
+    # Feche a nova aba (opcional)
+    driver.close()
+
+    # Volte o foco para a aba original (a janela de índice 0)
+    driver.switch_to.window(driver.window_handles[0])
+
+    # Continue a automação na aba original
+    # Por exemplo, localize e interaja com elementos na aba original:
+    elemento_original = driver.find_element_by_xpath("//seu/xpath/here")
+    elemento_original.click()
+
+    # Fechar o navegador após a automação (opcional)
     driver.quit()
 
 except Exception as e:
