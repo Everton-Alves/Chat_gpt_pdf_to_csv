@@ -1,4 +1,6 @@
 from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 
 # Inicialize o WebDriver (por exemplo, para o Chrome)
 driver = webdriver.Chrome()
@@ -12,6 +14,10 @@ try:
 
     # Encontra o elemento do combobox
     combobox = driver.find_element_by_name("Carteira")
+
+    # Simula a abertura do combobox para carregar todas as opções
+    ActionChains(driver).click(combobox).perform()
+    combobox.send_keys(Keys.ARROW_DOWN)  # Percorre as opções para garantir que todas sejam carregadas
 
     # Encontra todas as opções do combobox
     opcoes = combobox.find_elements_by_tag_name("option")
