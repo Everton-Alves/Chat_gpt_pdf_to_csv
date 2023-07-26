@@ -1,56 +1,41 @@
-Option Explicit
+import time
+import pyautogui
 
-Sub MoverEmailsIndesejaveis()
-    Dim olApp As Object
-    Dim olNs As Object
-    Dim olFolder As Object
-    Dim olInbox As Object
-    Dim olMail As Object
-    Dim ws As Worksheet
-    Dim i As Long
-    Dim lastRow As Long
-    Dim titleCriteria As String
-    Dim senderCriteria As String
-    Dim destinationFolderName As String
+def encontrar_imagem(imagem):
+    try:
+        local_imagem = pyautogui.locateOnScreen(imagem)
+        return local_imagem
+    except Exception as e:
+        return None
+
+def clicar_no_botao(x, y):
+    pyautogui.click(x, y)
+
+def baixar_arquivo():
+    # Implemente aqui a lógica para baixar o arquivo após clicar no botão de download.
+    print("Arquivo baixado com sucesso!")
+
+def automatizar_rotina(executavel, imagem_botao, pos_botao_download):
+    pyautogui.PAUSE = 1  # Atraso de 1 segundo entre as ações (ajuste conforme necessário).
     
-    ' Defina o nome da planilha que contém as informações dos filtros
-    Set ws = ThisWorkbook.Sheets("Filtros")
-    
-    ' Obtenha a última linha da coluna A na planilha "Filtros"
-    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
-    
-    ' Crie uma referência ao aplicativo Outlook
-    Set olApp = CreateObject("Outlook.Application")
-    
-    ' Obtenha o namespace do Outlook
-    Set olNs = olApp.GetNamespace("MAPI")
-    
-    ' Defina a pasta de entrada (Inbox)
-    Set olInbox = olNs.GetDefaultFolder(6)
-    
-    ' Percorra os filtros na planilha e mova os e-mails correspondentes para as pastas específicas
-    For i = 2 To lastRow ' Inicie a partir da segunda linha para ignorar o cabeçalho
-        titleCriteria = ws.Cells(i, "A").Value
-        senderCriteria = ws.Cells(i, "B").Value
-        destinationFolderName = ws.Cells(i, "C").Value
-        
-        ' Defina a pasta de destino
-        Set olFolder = olInbox.Folders(destinationFolderName)
-        
-        ' Percorra os e-mails na pasta de entrada (Inbox)
-        For Each olMail In olInbox.Items
-            ' Verifique se o título e o remetente do e-mail correspondem aos critérios fornecidos na planilha
-            If InStr(1, olMail.Subject, titleCriteria, vbTextCompare) > 0 And InStr(1, olMail.SenderEmailAddress, senderCriteria, vbTextCompare) > 0 Then
-                ' Mova o e-mail para a pasta de destino
-                olMail.Move olFolder
-            End If
-        Next olMail
-    Next i
-    
-    ' Limpe as referências
-    Set olApp = Nothing
-    Set olNs = Nothing
-    Set olInbox = Nothing
-    Set olFolder = Nothing
-    Set olMail = Nothing
-End Sub
+    # Executar o executável (substitua "caminho/do/executavel" pelo caminho correto).
+    # Exemplo: subprocess.Popen("caminho/do/executavel")
+
+    while True:
+        local_imagem = encontrar_imagem(imagem_botao)
+        if local_imagem:
+            print("Botão encontrado!")
+            x, y = pyautogui.center(local_imagem)
+            clicar_no_botao(x, y)
+            baixar_arquivo()
+            break
+        else:
+            print("Aguardando o botão...")
+            time.sleep(2)  # Esperar 2 segundos antes de verificar novamente.
+
+if __name__ == "__main__":
+    executavel = "caminho/do/executavel"  # Substitua pelo caminho correto do executável.
+    imagem_botao = "caminho/da/imagem/do-botao.png"  # Substitua pelo caminho da imagem do botão.
+    pos_botao_download = (x, y)  # Substitua pelas coordenadas (x, y) do botão de download.
+
+    automatizar_rotina(executavel, imagem_botao, pos_botao_download)
