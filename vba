@@ -1,41 +1,34 @@
 from selenium import webdriver
-import time
+from selenium.webdriver.support.ui import Select
 
 # Inicialize o WebDriver (por exemplo, para o Chrome)
 driver = webdriver.Chrome()
 
-# URL da página onde está o botão
+# URL da página onde está o combobox
 url = "https://www.example.com"
 
 try:
     # Abre a página
     driver.get(url)
 
-    # Clique no botão que abre uma nova aba
-    botao = driver.find_element_by_id("botao_id")
-    botao.click()
+    # Localize o elemento combobox
+    combobox = driver.find_element_by_id("combobox_id")
 
-    # Aguarde um tempo para garantir que a nova aba seja aberta (ajuste conforme a necessidade)
-    time.sleep(2)
+    # Crie um objeto Select para interagir com o combobox
+    select_combobox = Select(combobox)
 
-    # Troque o foco para a nova aba (a janela de índice 1)
-    driver.switch_to.window(driver.window_handles[1])
+    # Obtenha a lista de opções do combobox
+    lista_opcoes = select_combobox.options
 
-    # Continue a automação na nova aba
-    # Por exemplo, localize e interaja com elementos na nova aba:
-    novo_elemento = driver.find_element_by_xpath("//seu/xpath/here")
-    novo_elemento.click()
+    # Crie um loop para interagir com cada elemento do combobox
+    for opcao in lista_opcoes:
+        # Selecione cada opção do combobox
+        select_combobox.select_by_value(opcao.get_attribute("value"))
 
-    # Feche a nova aba (opcional)
-    driver.close()
-
-    # Volte o foco para a aba original (a janela de índice 0)
-    driver.switch_to.window(driver.window_handles[0])
-
-    # Continue a automação na aba original
-    # Por exemplo, localize e interaja com elementos na aba original:
-    elemento_original = driver.find_element_by_xpath("//seu/xpath/here")
-    elemento_original.click()
+        # Continue a automação com a opção selecionada
+        # Por exemplo, localize e interaja com outros elementos na página após selecionar a opção do combobox
+        outro_elemento = driver.find_element_by_xpath("//seu/xpath/here")
+        outro_elemento.click()
 
     # Fechar o navegador após a automação (opcional)
     driver.quit()
