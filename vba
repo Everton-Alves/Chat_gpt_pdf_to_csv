@@ -1,40 +1,37 @@
-from selenium import webdriver
+import pyautogui
+import time
 
-# Inicialize o WebDriver (por exemplo, para o Chrome)
-driver = webdriver.Chrome()
+def move_mouse_zigzag(num_loops, width, height):
+    # Configurar a velocidade de movimento do mouse (opcional)
+    pyautogui.FAILSAFE = True
+    pyautogui.PAUSE = 0.5  # Tempo de pausa entre cada movimento (ajuste conforme necessário)
 
-# URL da página onde está o combobox
-url = "https://www.example.com"
+    for _ in range(num_loops):
+        # Movimento horizontal para a direita
+        for x in range(width):
+            pyautogui.moveTo(x, pyautogui.position().y, duration=0.1)
+        
+        # Movimento vertical para baixo
+        for y in range(height):
+            pyautogui.moveTo(pyautogui.position().x, y, duration=0.1)
+        
+        # Movimento horizontal para a esquerda
+        for x in range(width, 0, -1):
+            pyautogui.moveTo(x, pyautogui.position().y, duration=0.1)
+
+        # Movimento vertical para cima
+        for y in range(height, 0, -1):
+            pyautogui.moveTo(pyautogui.position().x, y, duration=0.1)
+
+# Configuração das dimensões da tela
+largura_da_tela = 800
+altura_da_tela = 600
+
+# Defina o número de vezes que deseja repetir o zig zag
+numero_de_loops = 3
 
 try:
-    # Abre a página
-    driver.get(url)
-
-    # Encontra o elemento do combobox pelo atributo 'name'
-    combobox = driver.find_element_by_name("carteira")
-
-    # Encontra todas as opções do combobox
-    opcoes = combobox.find_elements_by_tag_name("option")
-
-    # Laço de repetição para clicar em cada elemento do combobox
-    for opcao in opcoes:
-        # Obtém o valor e o texto de cada opção
-        valor = opcao.get_attribute("value")
-        texto = opcao.text
-
-        # Clica na opção do combobox pelo texto da opção
-        combobox.click()
-        driver.find_element_by_xpath(f"//option[text()='{texto}']").click()
-
-        # Continue a automação com a opção selecionada, por exemplo, clique em um botão, envie formulários, etc.
-        # ...
-        
-        # Imprime o valor e o texto da opção atual (opcional)
-        print(f"Valor: {valor}, Texto: {texto}")
-
-    # Fechar o navegador após a automação (opcional)
-    driver.quit()
-
-except Exception as e:
-    print(f"Erro: {e}")
-    driver.quit()
+    time.sleep(2)  # Aguardar 2 segundos antes de começar (tempo para posicionar o mouse na janela desejada)
+    move_mouse_zigzag(numero_de_loops, largura_da_tela, altura_da_tela)
+except KeyboardInterrupt:
+    print("\nExecução interrompida pelo usuário.")
