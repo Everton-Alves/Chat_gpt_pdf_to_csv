@@ -1,12 +1,31 @@
-Sub RepetirValor()
-    Dim valor As Variant
-    Dim i As Integer
+Sub TransformXMLToColumns()
+    Dim xmlFilePath As String
+    Dim xmlDoc As Object
+    Dim xmlNodeList As Object
+    Dim xmlNode As Object
+    Dim rowCounter As Long
+    Dim colCounter As Long
     
-    ' Define o valor a ser repetido
-    valor = ActiveCell.Value
+    ' Defina o caminho para o arquivo XML
+    xmlFilePath = "C:\Caminho\Para\Seu\Arquivo.xml"
     
-    ' Percorre as próximas 15 linhas a partir da célula ativa
-    For i = 1 To 15
-        ActiveCell.Offset(i - 1, 1).Value = valor
-    Next i
+    ' Crie um novo objeto XML e carregue o arquivo
+    Set xmlDoc = CreateObject("MSXML2.DOMDocument")
+    xmlDoc.async = False
+    xmlDoc.Load (xmlFilePath)
+    
+    ' Defina a primeira linha para começar a preencher os dados
+    rowCounter = 1
+    
+    ' Loop através dos elementos desejados no XML (ajuste conforme necessário)
+    Set xmlNodeList = xmlDoc.SelectNodes("/root/element")
+    For Each xmlNode In xmlNodeList
+        colCounter = 1
+        ' Loop através dos atributos ou elementos filho do nó atual (ajuste conforme necessário)
+        For Each childNode In xmlNode.ChildNodes
+            Cells(rowCounter, colCounter).Value = childNode.Text
+            colCounter = colCounter + 1
+        Next childNode
+        rowCounter = rowCounter + 1
+    Next xmlNode
 End Sub
