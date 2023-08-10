@@ -23,26 +23,25 @@ Sub XMLToExcelWithHeaders()
     
     ' Crie um novo arquivo Excel
     Set excelWorkbook = excelApp.Workbooks.Add
-    Set excelWorksheet = excelWorkbook.Worksheets(1)
+    
+    ' Crie uma planilha
+    Set excelWorksheet = excelWorkbook.Worksheets.Add
+    
+    ' Inicialize contadores
+    rowCounter = 1
+    colCounter = 1
     
     ' Loop através dos elementos no XML
     Set xmlNodeList = xmlDoc.SelectNodes("//*")
-    
-    ' Escreva os títulos das informações do XML como cabeçalhos
-    colCounter = 1
     For Each xmlNode In xmlNodeList
-        excelWorksheet.Cells(1, colCounter).Value = xmlNode.nodeName
+        ' Escreva o título da informação do XML
+        excelWorksheet.Cells(rowCounter, colCounter).Value = xmlNode.nodeName
+        
+        ' Escreva o valor da informação do XML
         colCounter = colCounter + 1
-    Next xmlNode
-    
-    ' Preencha os valores das informações do XML
-    rowCounter = 2
-    For Each xmlNode In xmlNodeList
-        colCounter = 1
-        For Each childNode In xmlNode.ChildNodes
-            excelWorksheet.Cells(rowCounter, colCounter).Value = childNode.Text
-            colCounter = colCounter + 1
-        Next childNode
+        excelWorksheet.Cells(rowCounter, colCounter).Value = xmlNode.Text
+        
         rowCounter = rowCounter + 1
+        colCounter = 1
     Next xmlNode
 End Sub
