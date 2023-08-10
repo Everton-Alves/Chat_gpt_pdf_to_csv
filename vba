@@ -1,11 +1,9 @@
-Sub XMLToExcelWithHeaders()
+Sub ReadXMLtoExcel()
     Dim xmlFilePath As String
     Dim xmlDoc As Object
     Dim xmlNodeList As Object
     Dim xmlNode As Object
-    Dim excelApp As Object
-    Dim excelWorkbook As Object
-    Dim excelWorksheet As Object
+    Dim ws As Worksheet
     Dim rowCounter As Long
     Dim colCounter As Long
     
@@ -17,31 +15,29 @@ Sub XMLToExcelWithHeaders()
     xmlDoc.async = False
     xmlDoc.Load (xmlFilePath)
     
-    ' Crie uma instância do Excel
-    Set excelApp = CreateObject("Excel.Application")
-    excelApp.Visible = True
-    
-    ' Crie um novo arquivo Excel
-    Set excelWorkbook = excelApp.Workbooks.Add
-    
-    ' Crie uma planilha
-    Set excelWorksheet = excelWorkbook.Worksheets.Add
-    
-    ' Inicialize contadores
-    rowCounter = 1
-    colCounter = 1
-    
-    ' Loop através dos elementos no XML
-    Set xmlNodeList = xmlDoc.SelectNodes("//*")
-    For Each xmlNode In xmlNodeList
-        ' Escreva o título da informação do XML
-        excelWorksheet.Cells(rowCounter, colCounter).Value = xmlNode.nodeName
+    ' Loop através de cada elemento raiz no XML (cada tabela)
+    For Each xmlNode In xmlDoc.ChildNodes
+        ' Crie uma nova planilha para a tabela
+        Set ws = ThisWorkbook.Sheets.Add(After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count))
+        ws.Name = xmlNode.nodeName
         
-        ' Escreva o valor da informação do XML
-        colCounter = colCounter + 1
-        excelWorksheet.Cells(rowCounter, colCounter).Value = xmlNode.Text
-        
-        rowCounter = rowCounter + 1
+        ' Defina o contador de colunas para a primeira coluna
         colCounter = 1
+        
+        ' Loop através dos elementos filhos do nó atual (tags)
+        For Each childNode In xmlNode.ChildNodes
+            ' Preencha o cabeçalho da coluna com o nome da tag
+            ws.Cells(1, colCounter).Value = childNode.nodeName
+            
+            ' Preencha os valores abaixo da coluna
+            rowCounter = 2
+            For Each valueNode In childNode.ChildNodes
+                ws.Cells(rowCounter, colCounter).Value = valueNode.Text
+                rowCounter = rowCounter + 1
+            Next valueNode
+            
+            ' Avance para a próxima coluna
+            colCounter = colCounter + 1
+        Next childNode
     Next xmlNode
 End Sub
