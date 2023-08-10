@@ -1,4 +1,4 @@
-Sub XMLToExcel()
+Sub XMLToExcelWithHeaders()
     Dim xmlFilePath As String
     Dim xmlDoc As Object
     Dim xmlNodeList As Object
@@ -17,22 +17,28 @@ Sub XMLToExcel()
     xmlDoc.async = False
     xmlDoc.Load (xmlFilePath)
     
-    ' Crie uma nova instância do Excel
+    ' Crie uma instância do Excel
     Set excelApp = CreateObject("Excel.Application")
     excelApp.Visible = True
     
-    ' Adicione um novo livro de trabalho e planilha
+    ' Crie um novo arquivo Excel
     Set excelWorkbook = excelApp.Workbooks.Add
     Set excelWorksheet = excelWorkbook.Worksheets(1)
     
-    ' Defina a primeira linha para começar a preencher os dados
-    rowCounter = 1
+    ' Loop através dos elementos no XML
+    Set xmlNodeList = xmlDoc.SelectNodes("//*")
     
-    ' Loop através dos elementos desejados no XML
-    Set xmlNodeList = xmlDoc.SelectNodes("//*") ' Seleciona todos os elementos no XML
+    ' Escreva os títulos das informações do XML como cabeçalhos
+    colCounter = 1
+    For Each xmlNode In xmlNodeList
+        excelWorksheet.Cells(1, colCounter).Value = xmlNode.nodeName
+        colCounter = colCounter + 1
+    Next xmlNode
+    
+    ' Preencha os valores das informações do XML
+    rowCounter = 2
     For Each xmlNode In xmlNodeList
         colCounter = 1
-        ' Loop através dos atributos ou elementos filho do nó atual
         For Each childNode In xmlNode.ChildNodes
             excelWorksheet.Cells(rowCounter, colCounter).Value = childNode.Text
             colCounter = colCounter + 1
