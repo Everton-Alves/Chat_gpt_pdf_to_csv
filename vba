@@ -1,33 +1,24 @@
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
-# Inicializar o navegador (no exemplo, estou usando o Chrome)
-driver = webdriver.Chrome()
+# Configuração do driver do Selenium (escolha o driver adequado para o seu navegador)
+driver = webdriver.Chrome(executable_path='caminho_para_o_chromedriver')
 
-# URL da página que você quer testar
-url = "URL_DA_PAGINA_AQUI"
+# URL da página que contém a tabela
+url = 'URL_DA_PAGINA_AQUI'
 
-# Abrir a página no navegador
+# Acesse a página
 driver.get(url)
 
-# Definir o XPath do botão que você quer verificar
-xpath_do_botao = "COLOQUE_AQUI_O_XPATH_DO_BOTAO"
+# Localize o elemento <td> da tabela pelo seu seletor CSS (ou XPath, se preferir)
+td_element = driver.find_element_by_css_selector('seletor_css_do_td')
 
-try:
-    # Aguardar até que o botão esteja presente na página
-    botao = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath_do_botao)))
-    
-    # Se o botão estiver presente, realizar alguma ação
-    if botao.is_displayed():
-        print("O botão está presente e visível.")
-        # Aqui você pode adicionar o código para interagir com o botão, clicando nele, por exemplo.
-        # botao.click()
-    else:
-        print("O botão está presente, mas não está visível.")
-except:
-    print("O botão não foi encontrado na página.")
+# Navegue para o elemento pai <tr> e, em seguida, conte todas as linhas na tabela
+tr_element = td_element.find_element_by_xpath('./ancestor::tr')
+table_rows = tr_element.find_elements_by_xpath('./following-sibling::tr')
+num_rows = len(table_rows) + 1  # Adicione 1 para contar a linha atual
 
-# Fechar o navegador
+# Imprima o número de linhas da tabela
+print(f'Número de linhas na tabela: {num_rows}')
+
+# Feche o navegador
 driver.quit()
