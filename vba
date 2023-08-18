@@ -1,22 +1,25 @@
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 
 # Configuração do driver do Selenium (escolha o driver adequado para o seu navegador)
 driver = webdriver.Chrome(executable_path='caminho_para_o_chromedriver')
 
-# URL da página onde você deseja encontrar o texto e clicar nele
+# URL da página onde você deseja simular a pressão da tecla Tab
 url = 'URL_DA_PAGINA_AQUI'
 
-# Texto que você deseja encontrar e clicar
-texto_alvo = 'Texto_Alvo_Aqui'
+# Número de vezes que você deseja pressionar a tecla Tab
+quantidade_de_tabs = 15
 
 # Acesse a página
 driver.get(url)
 
-# Encontre o elemento que contém o texto
-elemento_com_texto = driver.find_element_by_xpath(f'//*[contains(text(), "{texto_alvo}")]')
+# Localize um elemento na página para garantir que ela esteja ativa
+# Por exemplo, você pode localizar o body ou outro elemento visível
+elemento_qualquer = driver.find_element_by_tag_name('body')
 
-# Clique no elemento com o texto
-elemento_com_texto.click()
+# Simule a pressão da tecla Tab várias vezes
+for _ in range(quantidade_de_tabs):
+    elemento_qualquer.send_keys(Keys.TAB)
 
 # Feche o navegador
 driver.quit()
