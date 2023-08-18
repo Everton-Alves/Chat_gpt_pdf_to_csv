@@ -1,5 +1,5 @@
 from selenium import webdriver
-from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 
 # Configuração do driver do Selenium (escolha o driver adequado para o seu navegador)
 driver = webdriver.Chrome(executable_path='caminho_para_o_chromedriver')
@@ -10,14 +10,14 @@ url = 'URL_DA_PAGINA_AQUI'
 # Acesse a página
 driver.get(url)
 
-# Localize o elemento alvo pelo seu seletor CSS (ou XPath, se preferir)
+# Localize o elemento onde você deseja simular a pressão das teclas Tab e Enter
 elemento_alvo = driver.find_element_by_css_selector('seletor_css_do_elemento')
 
-# Instanciar a classe ActionChains
-actions = ActionChains(driver)
+# Simule a pressão da tecla Tab
+elemento_alvo.send_keys(Keys.TAB)
 
-# Mover o mouse para o elemento alvo
-actions.move_to_element(elemento_alvo).perform()
+# Simule a pressão da tecla Enter
+elemento_alvo.send_keys(Keys.ENTER)
 
 # Feche o navegador
 driver.quit()
