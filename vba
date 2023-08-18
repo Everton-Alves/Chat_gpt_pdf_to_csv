@@ -1,25 +1,20 @@
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
+import xml.etree.ElementTree as ET
+from openpyxl import Workbook
 
-# Configuração do driver do Selenium (escolha o driver adequado para o seu navegador)
-driver = webdriver.Chrome(executable_path='caminho_para_o_chromedriver')
+# Carregar o arquivo XML
+tree = ET.parse('seuarquivo.xml')
+root = tree.getroot()
 
-# URL da página onde você deseja simular a pressão da tecla Tab
-url = 'URL_DA_PAGINA_AQUI'
+# Criar um novo arquivo Excel
+wb = Workbook()
+ws = wb.active
 
-# Número de vezes que você deseja pressionar a tecla Tab
-quantidade_de_tabs = 15
+# Iterar pelos elementos do XML e adicionar ao Excel
+for item in root:
+    row = []
+    for child in item:
+        row.append(child.text)
+    ws.append(row)
 
-# Acesse a página
-driver.get(url)
-
-# Localize um elemento na página para garantir que ela esteja ativa
-# Por exemplo, você pode localizar o body ou outro elemento visível
-elemento_qualquer = driver.find_element_by_tag_name('body')
-
-# Simule a pressão da tecla Tab várias vezes
-for _ in range(quantidade_de_tabs):
-    elemento_qualquer.send_keys(Keys.TAB)
-
-# Feche o navegador
-driver.quit()
+# Salvar o arquivo Excel
+wb.save('output.xlsx')
