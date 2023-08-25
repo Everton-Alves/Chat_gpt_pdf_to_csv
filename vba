@@ -1,44 +1,29 @@
-import os
-import xml.etree.ElementTree as ET
-from openpyxl import Workbook
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
-# Pasta contendo os arquivos XML
-pasta_xmls = 'caminho/para/sua/pasta'
+# Configurar o driver do Selenium (no exemplo, estou usando o Chrome)
+driver = webdriver.Chrome(executable_path='caminho_para_o_chromedriver.exe')
 
-# Criar um novo arquivo Excel
-wb = Workbook()
-ws = wb.active
+# Abrir a página da web
+url = "URL_da_pagina"
+driver.get(url)
 
-def get_nested_values(element):
-    values = []
-    for child in element:
-        values.append(child.text if child.text else '')
-    return values
+# Localizar o elemento da combobox e clicar nele
+combobox = driver.find_element(By.ID, 'id_da_combobox')  # Use o localizador correto (ID, class, XPath, etc.)
+combobox.click()
 
-# Flag para verificar se o cabeçalho já foi adicionado ao arquivo Excel
-header_added = False
+# Aguardar até que as opções da combobox estejam disponíveis
+wait = WebDriverWait(driver, 10)
+options = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'seletor_das_opcoes')))
 
-# Iterar pelos arquivos XML na pasta
-for arquivo in os.listdir(pasta_xmls):
-    if arquivo.endswith('.xml'):
-        # Carregar o arquivo XML
-        tree = ET.parse(os.path.join(pasta_xmls, arquivo))
-        root = tree.getroot()
+# Encontrar a opção desejada pelo nome e clicar nela
+opcao_desejada_nome = "Nome da Opção Desejada"
+for option in options:
+    if option.text == opcao_desejada_nome:
+        option.click()
+        break
 
-        # Criação dos cabeçalhos das colunas (apenas uma vez)
-        if not header_added:
-            headers = []
-            for child in root[0]:
-                headers.extend([f"{child.tag}_{sub.tag}" for sub in child])
-            ws.append(headers)
-            header_added = True
-
-        # Iterar pelos elementos do XML e adicionar ao Excel
-        for item in root:
-            row = []
-            for child in item:
-                row.extend(get_nested_values(child))
-            ws.append(row)
-
-# Salvar o arquivo Excel final
-wb.save('output_final.xlsx')
+# Fechar o navegador
+driver.quit()
