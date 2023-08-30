@@ -1,25 +1,17 @@
 import cv2
 import numpy as np
 
-# Carregar a imagem que você deseja verificar
-imagem_alvo = cv2.imread('caminho/para/sua/imagem.png')
+# Carregar a imagem alvo que você deseja procurar
+imagem_alvo = cv2.imread('imagem_alvo.png')
 
-# Função para verificar se a imagem alvo foi encontrada em uma captura de tela
-def verificar_imagem_na_tela(imagem_alvo):
-    screenshot = cv2.imread('screenshot.png')  # Captura de tela capturada previamente
-    resultado = cv2.matchTemplate(screenshot, imagem_alvo, cv2.TM_CCOEFF_NORMED)
-    threshold = 0.8  # Ajuste este valor conforme necessário
+# Carregar uma captura de tela (substitua 'screenshot.png' pelo caminho da sua captura de tela)
+captura_de_tela = cv2.imread('screenshot.png')
 
-    loc = np.where(resultado >= threshold)
-    if len(loc[0]) > 0:
-        return True
-    else:
-        return False
+# Encontrar as coordenadas da imagem alvo na captura de tela
+resultado = cv2.matchTemplate(captura_de_tela, imagem_alvo, cv2.TM_CCOEFF_NORMED)
+min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(resultado)
 
-# Verificar se a imagem alvo foi exibida na captura de tela
-imagem_exibida = verificar_imagem_na_tela(imagem_alvo)
+# Extrair as coordenadas onde a imagem alvo foi encontrada
+coordenadas_x, coordenadas_y = max_loc
 
-if imagem_exibida:
-    print("A imagem foi exibida na tela.")
-else:
-    print("A imagem não foi encontrada na tela.")
+print(f"Coordenadas (x, y) da imagem alvo: ({coordenadas_x}, {coordenadas_y})")
