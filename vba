@@ -1,17 +1,37 @@
+from selenium import webdriver
+import pyautogui
 import cv2
 import numpy as np
+import time
 
-# Carregar a imagem alvo que você deseja procurar
+# Configuração do Selenium
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument("--start-maximized")  # Maximiza a janela do Chrome
+driver = webdriver.Chrome(executable_path="caminho/para/chromedriver", options=chrome_options)
+driver.get("URL_da_página_a_ser_aberta")  # Substitua pela URL correta
+
+# Espera um tempo para a página carregar completamente
+time.sleep(5)
+
+# Capturar a tela do Chrome usando o Selenium
+screenshot_path = "screenshot_chrome.png"
+driver.save_screenshot(screenshot_path)
+
+# Carregar a imagem que você deseja procurar
 imagem_alvo = cv2.imread('imagem_alvo.png')
 
-# Carregar uma captura de tela (substitua 'screenshot.png' pelo caminho da sua captura de tela)
-captura_de_tela = cv2.imread('screenshot.png')
+# Carregar a captura de tela do Chrome
+tela_chrome = cv2.imread(screenshot_path)
 
-# Encontrar as coordenadas da imagem alvo na captura de tela
-resultado = cv2.matchTemplate(captura_de_tela, imagem_alvo, cv2.TM_CCOEFF_NORMED)
+# Encontrar as coordenadas da imagem alvo na tela do Chrome
+resultado = cv2.matchTemplate(tela_chrome, imagem_alvo, cv2.TM_CCOEFF_NORMED)
 min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(resultado)
 
-# Extrair as coordenadas onde a imagem alvo foi encontrada
-coordenadas_x, coordenadas_y = max_loc
+# Obter as coordenadas da correspondência mais forte
+x, y = max_loc
 
-print(f"Coordenadas (x, y) da imagem alvo: ({coordenadas_x}, {coordenadas_y})")
+# Clicar nas coordenadas encontradas usando o PyAutoGUI
+pyautogui.click(x, y)
+
+# Fechar o navegador do Selenium
+driver.quit()
