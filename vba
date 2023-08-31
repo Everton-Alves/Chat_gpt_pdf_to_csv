@@ -6,18 +6,17 @@ driver = webdriver.Chrome(executable_path="caminho/para/chromedriver")
 # Abrir a página da web
 driver.get("URL_da_página_a_ser_aberta")  # Substitua pela URL correta
 
-# Parte do nome do elemento que você deseja encontrar
-parte_do_nome = "btnBuscar"
+# Índice do elemento que você deseja selecionar (2ª correspondência)
+indice_elemento = 2
 
-# Criar uma expressão XPath que contém a parte do nome
-xpath_pattern = f"//*[contains(@id, '{parte_do_nome}') or contains(@name, '{parte_do_nome}')]"
+# Criar o XPath com base no índice
+xpath = f"(//*[contains(@id, 'btnBuscar')])[{indice_elemento}]"
 
-# Encontrar todos os elementos correspondentes
-elementos = driver.find_elements_by_xpath(xpath_pattern)
+# Encontrar o elemento desejado
+elemento = driver.find_element_by_xpath(xpath)
 
-# Clicar em cada elemento encontrado
-for elemento in elementos:
-    elemento.click()
+# Clicar no elemento
+elemento.click()
 
 # Fechar o navegador
 driver.quit()
