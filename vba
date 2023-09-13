@@ -1,22 +1,23 @@
 from selenium import webdriver
 
-# Inicializar o driver do Selenium
-driver = webdriver.Chrome(executable_path="caminho/para/chromedriver")
+# Inicialize o driver do Selenium (substitua 'chrome' pelo seu navegador de escolha)
+driver = webdriver.Chrome()
 
-# Abrir a página da web
-driver.get("URL_da_página_a_ser_aberta")  # Substitua pela URL correta
+# Abra a página da web
+driver.get("URL_DA_PAGINA")
 
-# Parte do nome que você deseja encontrar
-parte_do_nome = "PAULA"
+# Localize o elemento do combobox por XPath
+# Substitua 'XPATH_DO_COMBOBOX' pelo XPath real do seu combobox
+combobox = driver.find_element_by_xpath("XPATH_DO_COMBOBOX")
 
-# Criar o XPath para o elemento
-xpath = f"//a[contains(text(), '{parte_do_nome}')]/parent::node()"
+# Clique no combobox para abrir as opções
+combobox.click()
 
-# Encontrar o elemento usando o XPath
-elemento = driver.find_element_by_xpath(xpath)
+# Localize a opção desejada por seu texto visível e clique nela
+# Substitua 'OPCAO_DESEJADA' pelo texto da opção que você deseja selecionar
+driver.find_element_by_xpath(f"//*[text()='{OPCAO_DESEJADA}']").click()
 
-# Clicar no elemento
-elemento.click()
+# Execute outras ações no site, se necessário...
 
-# Fechar o navegador
+# Feche o navegador quando terminar
 driver.quit()
