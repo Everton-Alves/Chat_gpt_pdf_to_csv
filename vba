@@ -4,16 +4,21 @@ import pandas as pd
 # Nome do arquivo PDF do extrato bancário
 pdf_file = 'extrato_bancario.pdf'
 
-# Local onde salvar o arquivo Excel
-excel_file = 'extrato_bancario.xlsx'
+# Extrair texto do PDF
+text = tabula.read_pdf(pdf_file, pages='all', output_format='json')
 
-# Extrair tabelas do PDF
-tables = tabula.read_pdf(pdf_file, pages='all')
+# Processar o texto para extrair informações (exemplo genérico)
+data = []
 
-# Converter as tabelas em um único DataFrame (se houver várias tabelas)
-df = pd.concat(tables)
+for page in text:
+    for item in page['data']:
+        data.append([x['text'] for x in item])
+
+# Converter os dados em um DataFrame do pandas
+df = pd.DataFrame(data, columns=['Nome do Ativo', 'Quantidade', 'Imposto de Renda'])
 
 # Salvar o DataFrame em um arquivo Excel
+excel_file = 'extrato_bancario.xlsx'
 df.to_excel(excel_file, index=False, engine='openpyxl')
 
-print(f'Extrato bancário convertido para {excel_file}')
+print(f'Dados do extrato bancário salvos em {excel_file}')
