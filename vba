@@ -1,23 +1,19 @@
-from selenium import webdriver
+import tabula
+import pandas as pd
 
-# Inicialize o driver do Selenium (substitua 'chrome' pelo seu navegador de escolha)
-driver = webdriver.Chrome()
+# Nome do arquivo PDF do extrato bancário
+pdf_file = 'extrato_bancario.pdf'
 
-# Abra a página da web
-driver.get("URL_DA_PAGINA")
+# Local onde salvar o arquivo Excel
+excel_file = 'extrato_bancario.xlsx'
 
-# Localize o elemento do combobox por XPath
-# Substitua 'XPATH_DO_COMBOBOX' pelo XPath real do seu combobox
-combobox = driver.find_element_by_xpath("XPATH_DO_COMBOBOX")
+# Extrair tabelas do PDF
+tables = tabula.read_pdf(pdf_file, pages='all')
 
-# Clique no combobox para abrir as opções
-combobox.click()
+# Converter as tabelas em um único DataFrame (se houver várias tabelas)
+df = pd.concat(tables)
 
-# Localize a opção desejada por seu texto visível e clique nela
-# Substitua 'OPCAO_DESEJADA' pelo texto da opção que você deseja selecionar
-driver.find_element_by_xpath(f"//*[text()='{OPCAO_DESEJADA}']").click()
+# Salvar o DataFrame em um arquivo Excel
+df.to_excel(excel_file, index=False, engine='openpyxl')
 
-# Execute outras ações no site, se necessário...
-
-# Feche o navegador quando terminar
-driver.quit()
+print(f'Extrato bancário convertido para {excel_file}')
