@@ -1,24 +1,25 @@
-import tabula
 import pandas as pd
 
-# Nome do arquivo PDF do extrato bancário
-pdf_file = 'extrato_bancario.pdf'
+# Carregue a planilha Excel (substitua 'nome_da_planilha.xlsx' pelo nome do seu arquivo)
+df = pd.read_excel('nome_da_planilha.xlsx', sheet_name='Lista contatos')
 
-# Extrair texto do PDF
-text = tabula.read_pdf(pdf_file, pages='all', output_format='json')
+# Itere sobre cada linha da planilha
+for index, row in df.iterrows():
+    # Acesse os valores das colunas especificadas
+    cliente = row['Cliente']
+    email = row['E-mail']
+    custodiante = row['Custodiante']
+    status_contato = row['Status_Contato']
 
-# Processar o texto para extrair informações (exemplo genérico)
-data = []
+    # Realize a operação desejada com os valores
+    # Por exemplo, você pode imprimir os valores ou realizar outras operações aqui
+    print("Cliente:", cliente)
+    print("E-mail:", email)
+    print("Custodiante:", custodiante)
+    print("Status de Contato:", status_contato)
+    
+    # Realize sua operação adicional aqui
+    # Por exemplo, chame uma função ou execute algum código relacionado aos valores lidos
 
-for page in text:
-    for item in page['data']:
-        data.append([x['text'] for x in item])
-
-# Converter os dados em um DataFrame do pandas
-df = pd.DataFrame(data, columns=['Nome do Ativo', 'Quantidade', 'Imposto de Renda'])
-
-# Salvar o DataFrame em um arquivo Excel
-excel_file = 'extrato_bancario.xlsx'
-df.to_excel(excel_file, index=False, engine='openpyxl')
-
-print(f'Dados do extrato bancário salvos em {excel_file}')
+# Feche o arquivo da planilha
+df.close()
