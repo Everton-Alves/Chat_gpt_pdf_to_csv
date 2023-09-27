@@ -1,48 +1,35 @@
-Sub ExtrairNomeEDataDeArquivosPDF()
-    ' Cria um objeto RegExp para lidar com expressões regulares
-    Dim objRegEx As Object
-    Set objRegEx = CreateObject("VBScript.RegExp")
+Sub VerificarValores()
+    Dim ws As Worksheet
+    Dim rng As Range
+    Dim cel As Range
+    Dim valoresBP() As Variant
+    Dim i As Long
     
-    ' Configura as propriedades do objeto RegExp para a expressão regular
-    objRegEx.Global = True           ' Define para procurar todas as correspondências no texto
-    objRegEx.IgnoreCase = True       ' Define para ignorar a diferença entre maiúsculas e minúsculas
-    objRegEx.Pattern = "(\d{14})\s*-\s*([A-Z_]+)_(\d{6})\.pdf"  ' Define a expressão regular
+    ' Defina a planilha na qual você deseja trabalhar
+    Set ws = ThisWorkbook.Sheets("NomeDaSuaPlanilha")
     
-    ' Especifica o caminho da pasta onde estão os arquivos PDF
-    Dim pastaOrigem As String
-    pastaOrigem = "C:\Caminho\Para\Os\Seus\Arquivos\PDF" ' Substitua pelo caminho da sua pasta
+    ' Defina o range da coluna "BP"
+    Set rng = ws.Range("BP1:BP" & ws.Cells(ws.Rows.Count, "BP").End(xlUp).Row)
     
-    ' Obtém o nome do primeiro arquivo PDF na pasta
-    Dim nomeArquivo As String
-    nomeArquivo = Dir(pastaOrigem & "\*.pdf")
+    ' Redimensione o vetor de acordo com o número de células no range
+    ReDim valoresBP(1 To rng.Rows.Count)
     
-    ' Loop para processar cada arquivo PDF na pasta
-    Do While nomeArquivo <> ""
-        ' Verifica se o nome do arquivo corresponde à expressão regular
-        If objRegEx.Test(nomeArquivo) Then
-            ' Executa a expressão regular no nome do arquivo para extrair as informações
-            Dim correspondencia As Object
-            Set correspondencia = objRegEx.Execute(nomeArquivo)
-            
-            ' Extrai as partes correspondentes do nome do arquivo
-            Dim numero As String
-            Dim nome As String
-            Dim data As String
-            
-            numero = correspondencia(0).SubMatches(0)
-            nome = correspondencia(0).SubMatches(1)
-            data = correspondencia(0).SubMatches(2)
-            
-            ' Exibe os resultados ou realiza outras ações com eles
-            Debug.Print "Número: " & numero
-            Debug.Print "Nome: " & nome
-            Debug.Print "Data: " & data
+    ' Armazene os valores da coluna "BP" no vetor
+    i = 1
+    For Each cel In rng
+        valoresBP(i) = cel.Value
+        i = i + 1
+    Next cel
+    
+    ' Itere pelos valores do vetor
+    For i = 1 To UBound(valoresBP)
+        ' Verifique se os valores nas linhas são iguais
+        If valoresBP(i) = valoresBP(i + 1) Then
+            ' Verifique se o valor na coluna "BQ" é "Aplicação" ou "Resgate"
+            If ws.Cells(i, "BQ").Value = "Aplicação" And ws.Cells(i + 1, "BQ").Value = "Resgate" Then
+                ' Faça algo aqui, por exemplo, imprimir a mensagem
+                MsgBox "Os valores em BP são iguais, e BQ contém Aplicação seguido por Resgate."
+            End If
         End If
-        
-        ' Obtém o nome do próximo arquivo PDF na pasta
-        nomeArquivo = Dir
-    Loop
-    
-    ' Libera o objeto RegExp
-    Set objRegEx = Nothing
+    Next i
 End Sub
