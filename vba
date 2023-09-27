@@ -1,35 +1,47 @@
-Sub VerificarValores()
+Sub VerificarColunas()
     Dim ws As Worksheet
-    Dim rng As Range
-    Dim cel As Range
-    Dim valoresBP() As Variant
+    Dim lastRow As Long
     Dim i As Long
+    Dim somaFinal As Double
+    Dim valorAtualU As Variant
+    Dim valorAtualV As Variant
+    Dim valorX As Double
     
     ' Defina a planilha na qual você deseja trabalhar
     Set ws = ThisWorkbook.Sheets("NomeDaSuaPlanilha")
     
-    ' Defina o range da coluna "BP"
-    Set rng = ws.Range("BP1:BP" & ws.Cells(ws.Rows.Count, "BP").End(xlUp).Row)
+    ' Encontre a última linha com dados na coluna U
+    lastRow = ws.Cells(ws.Rows.Count, "U").End(xlUp).Row
     
-    ' Redimensione o vetor de acordo com o número de células no range
-    ReDim valoresBP(1 To rng.Rows.Count)
+    ' Inicialize a soma final
+    somaFinal = 0
     
-    ' Armazene os valores da coluna "BP" no vetor
-    i = 1
-    For Each cel In rng
-        valoresBP(i) = cel.Value
-        i = i + 1
-    Next cel
-    
-    ' Itere pelos valores do vetor
-    For i = 1 To UBound(valoresBP)
-        ' Verifique se os valores nas linhas são iguais
-        If valoresBP(i) = valoresBP(i + 1) Then
-            ' Verifique se o valor na coluna "BQ" é "Aplicação" ou "Resgate"
-            If ws.Cells(i, "BQ").Value = "Aplicação" And ws.Cells(i + 1, "BQ").Value = "Resgate" Then
-                ' Faça algo aqui, por exemplo, imprimir a mensagem
-                MsgBox "Os valores em BP são iguais, e BQ contém Aplicação seguido por Resgate."
+    ' Comece a partir da segunda linha (assumindo que a primeira linha seja um cabeçalho)
+    For i = 2 To lastRow
+        ' Obtenha os valores das colunas U e V na linha atual
+        valorAtualU = ws.Cells(i, "U").Value
+        valorAtualV = ws.Cells(i, "V").Value
+        
+        ' Verifique se o valor em U é igual ao próximo
+        If valorAtualU = ws.Cells(i + 1, "U").Value Then
+            ' Verifique se o valor em V é "Aplicação" ou "Resgate"
+            If valorAtualV = "Aplicação" Then
+                valorX = Abs(ws.Cells(i, "X").Value) ' Valor positivo para Aplicação
+            ElseIf valorAtualV = "Resgate" Then
+                valorX = -Abs(ws.Cells(i, "X").Value) ' Valor negativo para Resgate
             End If
+            
+            ' Some o valor calculado à soma final
+            somaFinal = somaFinal + valorX
         End If
     Next i
+    
+    ' Determine se a soma final é positiva ou negativa e exiba o resultado
+    If somaFinal > 0 Then
+        MsgBox "A soma final é positiva. Valor de Aplicação: " & somaFinal
+    ElseIf somaFinal < 0 Then
+        MsgBox "A soma final é negativa. Valor de Resgate: " & somaFinal
+    Else
+        MsgBox "A soma final é zero."
+    End If
 End Sub
