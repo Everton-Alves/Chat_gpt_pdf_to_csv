@@ -1,41 +1,31 @@
-Sub CriarVetorEIterarValoresDistintos()
-    Dim ws As Worksheet
-    Set ws = ThisWorkbook.Sheets("Planilha1") ' Substitua "Planilha1" pelo nome da sua planilha
-    
-    Dim lastRow As Long
-    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row ' Encontra a última linha na coluna A
-    
-    Dim valoresDistintos() As Variant
-    ReDim valoresDistintos(1 To 1) ' Inicializa o vetor com tamanho 1
-    
-    Dim valor As Variant
+Sub RemoverValoresNulos()
+    Dim MeuVetor() As Variant
+    Dim NovoVetor() As Variant
     Dim i As Long
-    Dim encontrado As Boolean
+    Dim j As Long
     
-    For Each cell In ws.Range("A2:A" & lastRow) ' Assumindo que os dados começam na linha 2
-        valor = cell.Value
-        encontrado = False
-        
-        ' Verifica se o valor já existe no vetor
-        For i = 1 To UBound(valoresDistintos)
-            If valoresDistintos(i) = valor Then
-                encontrado = True
-                Exit For
-            End If
-        Next i
-        
-        ' Se não encontrado, adiciona ao vetor
-        If Not encontrado Then
-            ReDim Preserve valoresDistintos(1 To UBound(valoresDistintos) + 1)
-            valoresDistintos(UBound(valoresDistintos)) = valor
+    ' Preencha o vetor com alguns valores, incluindo nulos
+    MeuVetor = Array(1, 2, Null, 4, Null, 6, 7, Null, 9)
+    
+    ' Inicialize o novo vetor
+    ReDim NovoVetor(1 To UBound(MeuVetor))
+    
+    ' Loop para copiar os valores não nulos para o novo vetor
+    j = 1
+    For i = 1 To UBound(MeuVetor)
+        If Not IsNull(MeuVetor(i)) Then
+            NovoVetor(j) = MeuVetor(i)
+            j = j + 1
         End If
-    Next cell
+    Next i
     
-    ' Agora, você tem todos os valores distintos na matriz "valoresDistintos"
+    ' Redimensione o novo vetor para o tamanho correto
+    ReDim Preserve NovoVetor(1 To j - 1)
     
-    ' Iterar sobre os valores distintos
-    For i = 1 To UBound(valoresDistintos)
-        MsgBox "Valor Distinto: " & valoresDistintos(i)
-        ' Faça o que quiser com cada valor distintos aqui
+    ' Agora, NovoVetor contém os valores do vetor original sem nulos
+    
+    ' Imprima o novo vetor para verificar
+    For i = 1 To UBound(NovoVetor)
+        Debug.Print NovoVetor(i)
     Next i
 End Sub
