@@ -1,34 +1,37 @@
-import re
-from selenium import webdriver
-from selenium.webdriver.common.by import By
+from datetime import datetime
 
-# Inicializa o driver do Selenium (substitua 'caminho_para_o_executável_do_chromedriver' pelo caminho real)
-driver = webdriver.Chrome(executable_path='caminho_para_o_executável_do_chromedriver')
+# Dicionário para mapear nomes dos meses para valores numéricos
+meses = {
+    "janeiro": "01",
+    "fevereiro": "02",
+    "março": "03",
+    "abril": "04",
+    "maio": "05",
+    "junho": "06",
+    "julho": "07",
+    "agosto": "08",
+    "setembro": "09",
+    "outubro": "10",
+    "novembro": "11",
+    "dezembro": "12"
+}
 
-# Abre a página da web
-driver.get('URL_DA_PÁGINA')
+# Função para converter nome do mês para número do mês e formatar como YYYY-DD
+def converter_data(nome_mes, ano):
+    # Converte o nome do mês para número do mês (se existir no dicionário, senão retorna None)
+    numero_mes = meses.get(nome_mes.lower())
+    
+    # Se o nome do mês for válido, cria a string no formato YYYY-DD
+    if numero_mes:
+        data_formatada = f"{ano}-{numero_mes}"
+        return data_formatada
+    else:
+        return None
 
-# Encontra o elemento pelo nome da classe
-elemento = driver.find_element(By.CLASS_NAME, 'vaxel-text-subtitle-01')
+# Exemplo de uso da função
+nome_mes = "setembro"
+ano = "2023"
+data_formatada = converter_data(nome_mes, ano)
 
-# Obtém o texto do elemento
-texto = elemento.text
-
-# Usa expressão regular para extrair o mês e o ano
-padrao = r'(\w+) de (\d{4})'
-correspondencia = re.search(padrao, texto)
-
-# Se houver uma correspondência, armazena o mês e o ano
-if correspondencia:
-    mes = correspondencia.group(1)  # Obtém o nome do mês
-    ano = correspondencia.group(2)  # Obtém o ano
-else:
-    mes = None
-    ano = None
-
-# Fecha o navegador
-driver.quit()
-
-# Imprime o mês e o ano extraídos
-print("Mês:", mes)
-print("Ano:", ano)
+# Imprime a data formatada (ou None se o nome do mês não for válido)
+print(data_formatada)
