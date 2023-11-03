@@ -1,23 +1,34 @@
-import openpyxl
+import re
+from selenium import webdriver
+from selenium.webdriver.common.by import By
 
-# Carregue a planilha
-wb = openpyxl.load_workbook('caminho_para_o_arquivo.xlsx')
-Sheet = wb['nome_da_planilha']
+# Inicializa o driver do Selenium (substitua 'caminho_para_o_executável_do_chromedriver' pelo caminho real)
+driver = webdriver.Chrome(executable_path='caminho_para_o_executável_do_chromedriver')
 
-# Itere sobre os valores da coluna D
-column_d = Sheet['D']
-for cell in column_d:
-    # Obtenha o valor da coluna D
-    conta_corrente = cell.value
+# Abre a página da web
+driver.get('URL_DA_PÁGINA')
 
-    # Obtenha os valores das colunas A, B e C na mesma linha
-    linha = cell.row
-    valor_coluna_a = Sheet.cell(row=linha, column=1).value
-    valor_coluna_b = Sheet.cell(row=linha, column=2).value
-    valor_coluna_c = Sheet.cell(row=linha, column=3).value
+# Encontra o elemento pelo nome da classe
+elemento = driver.find_element(By.CLASS_NAME, 'vaxel-text-subtitle-01')
 
-    # Faça o que for necessário com os valores obtidos
-    print(f'Conta Corrente: {conta_corrente}, Coluna A: {valor_coluna_a}, Coluna B: {valor_coluna_b}, Coluna C: {valor_coluna_c}')
+# Obtém o texto do elemento
+texto = elemento.text
 
-# Feche a planilha após o processamento
-wb.close()
+# Usa expressão regular para extrair o mês e o ano
+padrao = r'(\w+) de (\d{4})'
+correspondencia = re.search(padrao, texto)
+
+# Se houver uma correspondência, armazena o mês e o ano
+if correspondencia:
+    mes = correspondencia.group(1)  # Obtém o nome do mês
+    ano = correspondencia.group(2)  # Obtém o ano
+else:
+    mes = None
+    ano = None
+
+# Fecha o navegador
+driver.quit()
+
+# Imprime o mês e o ano extraídos
+print("Mês:", mes)
+print("Ano:", ano)
