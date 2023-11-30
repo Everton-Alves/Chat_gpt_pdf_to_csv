@@ -1,37 +1,36 @@
-from datetime import datetime
+Sub ConverterMesParaFormatoYYYYMM()
+    ' Crie um dicionário para mapear os nomes dos meses
+    Dim meses As Object
+    Set meses = CreateObject("Scripting.Dictionary")
 
-# Dicionário para mapear nomes dos meses para valores numéricos
-meses = {
-    "janeiro": "01",
-    "fevereiro": "02",
-    "março": "03",
-    "abril": "04",
-    "maio": "05",
-    "junho": "06",
-    "julho": "07",
-    "agosto": "08",
-    "setembro": "09",
-    "outubro": "10",
-    "novembro": "11",
-    "dezembro": "12"
-}
+    ' Adicione os mapeamentos ao dicionário
+    meses.Add "Janeiro", "01"
+    meses.Add "Fevereiro", "02"
+    meses.Add "Março", "03"
+    meses.Add "Abril", "04"
+    meses.Add "Maio", "05"
+    meses.Add "Junho", "06"
+    meses.Add "Julho", "07"
+    meses.Add "Agosto", "08"
+    meses.Add "Setembro", "09"
+    meses.Add "Outubro", "10"
+    meses.Add "Novembro", "11"
+    meses.Add "Dezembro", "12"
 
-# Função para converter nome do mês para número do mês e formatar como YYYY-DD
-def converter_data(nome_mes, ano):
-    # Converte o nome do mês para número do mês (se existir no dicionário, senão retorna None)
-    numero_mes = meses.get(nome_mes.lower())
-    
-    # Se o nome do mês for válido, cria a string no formato YYYY-DD
-    if numero_mes:
-        data_formatada = f"{ano}-{numero_mes}"
-        return data_formatada
-    else:
-        return None
+    ' Mês a ser convertido (substitua conforme necessário)
+    Dim mesOriginal As String
+    mesOriginal = "Janeiro de 2023"
 
-# Exemplo de uso da função
-nome_mes = "setembro"
-ano = "2023"
-data_formatada = converter_data(nome_mes, ano)
+    ' Extrai o nome do mês do texto original
+    Dim nomeMes As String
+    nomeMes = Split(mesOriginal, " ")(0)
 
-# Imprime a data formatada (ou None se o nome do mês não for válido)
-print(data_formatada)
+    ' Obtém o valor correspondente no dicionário
+    Dim valorMes As String
+    If meses.Exists(nomeMes) Then
+        valorMes = meses(nomeMes)
+        MsgBox "O mês " & mesOriginal & " em formato YYYY-MM é: 2023-" & valorMes, vbInformation
+    Else
+        MsgBox "Mês não reconhecido.", vbExclamation
+    End If
+End Sub
