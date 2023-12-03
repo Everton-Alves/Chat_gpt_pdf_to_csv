@@ -1,24 +1,26 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-# Inicializa o driver do Selenium (certifique-se de ter o WebDriver correspondente ao seu navegador instalado)
+# Configuração do webdriver (certifique-se de ter o driver apropriado para o navegador instalado)
 driver = webdriver.Chrome()
 
-# URL do site que você está visitando
-url = "https://exemplo.com"
+# URL da página
+url = "sua_url_aqui"
 driver.get(url)
 
-# Parte específica do XPath que você está procurando
-parte_do_xpath = "txtValorCampo"
+# Parte do XPath que identifica o elemento 'gridResultados'
+xpath_base = "//div[contains(@id, 'gridResultados')]"
 
-# Constrói a expressão XPath usando a função contains()
-xpath_expression = f"//*[contains(@id, '{parte_do_xpath}')]"
+# Encontrar todos os elementos que correspondem à parte do XPath fornecida
+elementos_grid_resultados = driver.find_elements(By.XPATH, xpath_base)
 
-# Encontra o elemento usando a expressão XPath
-elemento = driver.find_element(By.XPATH, xpath_expression)
+# Iterar sobre os elementos para encontrar o elemento clicável com 'href'
+for elemento in elementos_grid_resultados:
+    # Verificar se o elemento tem um atributo 'href'
+    if elemento.get_attribute("href"):
+        # Clicar no elemento clicável
+        elemento.click()
+        break  # Se você só quer clicar no primeiro elemento encontrado, remova esta linha se desejar continuar procurando
 
-# Clica no elemento
-elemento.click()
-
-# Fecha o navegador
+# Fechar o navegador no final do script (ou você pode querer manipular outras páginas)
 driver.quit()
