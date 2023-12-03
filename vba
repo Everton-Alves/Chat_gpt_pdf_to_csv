@@ -1,26 +1,28 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
-# Configuração do webdriver (certifique-se de ter o driver apropriado para o navegador instalado)
+# Configuração do WebDriver (certifique-se de ter o WebDriver instalado e no PATH)
 driver = webdriver.Chrome()
 
-# URL da página
-url = "sua_url_aqui"
+# URL do site
+url = "URL_DO_SEU_SITE_AQUI"
 driver.get(url)
 
-# Parte do XPath que identifica o elemento 'gridResultados'
-xpath_base = "//div[contains(@id, 'gridResultados')]"
+# Parte do XPath fornecida
+parte_do_xpath = "_gridResultados\"]tbody/tr[2]/td[1]/a"
 
-# Encontrar todos os elementos que correspondem à parte do XPath fornecida
-elementos_grid_resultados = driver.find_elements(By.XPATH, xpath_base)
+# Construindo o XPath completo
+xpath = "//*[contains(@id, '" + parte_do_xpath + "')]"
 
-# Iterar sobre os elementos para encontrar o elemento clicável com 'href'
-for elemento in elementos_grid_resultados:
-    # Verificar se o elemento tem um atributo 'href'
-    if elemento.get_attribute("href"):
-        # Clicar no elemento clicável
-        elemento.click()
-        break  # Se você só quer clicar no primeiro elemento encontrado, remova esta linha se desejar continuar procurando
+# Aguardando a presença do elemento na página
+element = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.XPATH, xpath))
+)
 
-# Fechar o navegador no final do script (ou você pode querer manipular outras páginas)
+# Realizando a ação desejada no elemento
+element.click()
+
+# Fechar o navegador após a conclusão
 driver.quit()
