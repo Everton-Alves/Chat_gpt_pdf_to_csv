@@ -3,26 +3,22 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-# Configuração do WebDriver (certifique-se de ter o WebDriver instalado e no PATH)
-driver = webdriver.Chrome()
+# Configurar o WebDriver (certifique-se de ter o driver adequado instalado)
+driver = webdriver.Chrome()  # Substitua por Firefox ou outro driver, se preferir
 
-# URL do site
-url = "URL_DO_SEU_SITE_AQUI"
+# URL do site onde o elemento está localizado
+url = "url_do_seu_site_aqui"
 driver.get(url)
 
-# Parte do XPath fornecida
-parte_do_xpath = "_gridResultados\"]tbody/tr[2]/td[1]/a"
+try:
+    # Esperar até que o elemento seja visível
+    elemento = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.XPATH, '//a[contains(@href, "javascript:_doPostBack")]'))
+    )
 
-# Construindo o XPath completo
-xpath = "//*[contains(@id, '" + parte_do_xpath + "')]"
+    # Clicar no elemento
+    elemento.click()
 
-# Aguardando a presença do elemento na página
-element = WebDriverWait(driver, 10).until(
-    EC.presence_of_element_located((By.XPATH, xpath))
-)
-
-# Realizando a ação desejada no elemento
-element.click()
-
-# Fechar o navegador após a conclusão
-driver.quit()
+finally:
+    # Fechar o navegador após o clique
+    driver.quit()
