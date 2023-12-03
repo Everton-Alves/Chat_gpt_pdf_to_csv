@@ -1,24 +1,17 @@
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
-# Configurar o WebDriver (certifique-se de ter o driver adequado instalado)
-driver = webdriver.Chrome()  # Substitua por Firefox ou outro driver, se preferir
+# Instanciar o driver do Selenium
+driver = webdriver.Chrome()  # Certifique-se de ter o webdriver adequado para o seu navegador instalado e no PATH
 
-# URL do site onde o elemento está localizado
-url = "url_do_seu_site_aqui"
+# URL da página onde o elemento está localizado
+url = 'sua_url_aqui'
 driver.get(url)
 
-try:
-    # Esperar até que o elemento seja visível
-    elemento = WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((By.XPATH, '//a[contains(@href, "javascript:_doPostBack")]'))
-    )
+# Encontrar o elemento com base no texto "PAULO" dentro da tag <a>
+elemento_paulo = driver.find_element_by_xpath('//a[contains(text(), "PAULO")]')
 
-    # Clicar no elemento
-    elemento.click()
+# Clicar no elemento
+elemento_paulo.click()
 
-finally:
-    # Fechar o navegador após o clique
-    driver.quit()
+# Fechar o navegador (opcional)
+driver.quit()
