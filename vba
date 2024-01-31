@@ -1,32 +1,24 @@
-import pyautogui
-import time
+from selenium import webdriver
+from selenium.webdriver.common.by import By
 
-def clicar_com_base_na_imagem(imagem_path, confianca=0.8):
-    try:
-        # Obter as coordenadas da imagem na tela
-        localizacao = pyautogui.locateOnScreen(imagem_path, confidence=confianca)
+# Configurando o caminho do ChromeDriver (substitua pelo seu caminho)
+chrome_driver_path = '/caminho/para/seu/chromedriver.exe'
 
-        if localizacao is not None:
-            # Obter as coordenadas do centro da imagem
-            centro_x, centro_y = pyautogui.center(localizacao)
-            
-            # Clicar no centro da imagem
-            pyautogui.click(centro_x, centro_y)
-            print(f"Imagem encontrada e clicada nas coordenadas: ({centro_x}, {centro_y})")
-            return True
-        else:
-            print("Imagem não encontrada na tela.")
-            return False
+# Inicializando o navegador Chrome
+driver = webdriver.Chrome(executable_path=chrome_driver_path)
 
-    except Exception as e:
-        print(f"Erro ao tentar clicar na imagem: {e}")
-        return False
+# Abrindo a página da web
+url = "URL_DA_SUA_PAGINA"
+driver.get(url)
 
-# Substitua 'caminho/para/sua/imagem.png' pelo caminho real da sua imagem
-caminho_da_imagem = 'caminho/para/sua/imagem.png'
+# Construindo o XPath usando starts-with
+xpath_do_elemento = '//*[starts-with(@id, "ember")]'
 
-# Aguarde um tempo antes de executar o script para garantir que a página esteja totalmente carregada
-time.sleep(5)
+# Localizando o elemento pelo XPath
+elemento_ember = driver.find_element(By.XPATH, xpath_do_elemento)
 
-# Tente clicar na imagem
-clicar_com_base_na_imagem(caminho_da_imagem)
+# Imprimindo o ID do elemento encontrado
+print("ID do elemento 'ember':", elemento_ember.get_attribute("id"))
+
+# Fechando o navegador
+driver.quit()
