@@ -1,36 +1,32 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
+import pyautogui
+import time
 
-def encontrar_elemento_com_atualizacao(driver, by, valor, max_tentativas=3):
-    tentativa = 0
-    while tentativa < max_tentativas:
-        try:
-            elemento = driver.find_element(by, valor)
-            return elemento
-        except NoSuchElementException:
-            print(f"Elemento não encontrado na tentativa {tentativa + 1}. Atualizando a página...")
-            driver.refresh()
-            tentativa += 1
+def clicar_com_base_na_imagem(imagem_path, confianca=0.8):
+    try:
+        # Obter as coordenadas da imagem na tela
+        localizacao = pyautogui.locateOnScreen(imagem_path, confidence=confianca)
 
-    raise NoSuchElementException(f"Elemento não encontrado após {max_tentativas} tentativas.")
+        if localizacao is not None:
+            # Obter as coordenadas do centro da imagem
+            centro_x, centro_y = pyautogui.center(localizacao)
+            
+            # Clicar no centro da imagem
+            pyautogui.click(centro_x, centro_y)
+            print(f"Imagem encontrada e clicada nas coordenadas: ({centro_x}, {centro_y})")
+            return True
+        else:
+            print("Imagem não encontrada na tela.")
+            return False
 
-# Exemplo de uso
-chrome_driver_path = '/caminho/para/seu/chromedriver.exe'
-url = "https://example.com"
+    except Exception as e:
+        print(f"Erro ao tentar clicar na imagem: {e}")
+        return False
 
-# Inicializando o navegador Chrome
-driver = webdriver.Chrome(executable_path=chrome_driver_path)
-driver.get(url)
+# Substitua 'caminho/para/sua/imagem.png' pelo caminho real da sua imagem
+caminho_da_imagem = 'caminho/para/sua/imagem.png'
 
-# Tentando encontrar o elemento usando a função
-try:
-    # Substitua 'By.XPATH' e 'Seu XPath' pelos valores reais
-    elemento = encontrar_elemento_com_atualizacao(driver, By.XPATH, 'Seu XPath')
-    print("Elemento encontrado!")
-    # Faça o que quiser com o elemento aqui
-except NoSuchElementException as e:
-    print(e)
-finally:
-    # Fechando o navegador
-    driver.quit()
+# Aguarde um tempo antes de executar o script para garantir que a página esteja totalmente carregada
+time.sleep(5)
+
+# Tente clicar na imagem
+clicar_com_base_na_imagem(caminho_da_imagem)
