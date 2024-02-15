@@ -1,33 +1,33 @@
-import PyPDF2
+import tabula
 import pandas as pd
 
-def extract_info_from_pdf(file_path):
-    pdf_file_obj = open(file_path, 'rb')
-    pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
-    num_pages = pdf_reader.numPages
-    text = ''
-    for page in range(num_pages):
-        page_obj = pdf_reader.getPage(page)
-        text += page_obj.extractText()
-    pdf_file_obj.close()
-    return text
+def extrair_dados_pdf(input_pdf, output_excel):
+    # Extrair tabelas do PDF
+    tables = tabula.read_pdf(input_pdf, pages='all', multiple_tables=True)
 
-def write_to_excel(data, file_path):
-    df = pd.DataFrame(data)
-    df.to_excel(file_path, index=False)
+    # Inicializar um DataFrame vazio para armazenar os dados
+    dados_df = pd.DataFrame()
 
-# Exemplo de uso
-pdf_text = extract_info_from_pdf('extrato.pdf')
+    # Iterar sobre as tabelas extraídas
+    for tabela in tables:
+        # Verificar se a tabela contém as colunas desejadas
+        if 'Nome do Ativo' in tabela.columns and 'Data de Compra' in tabela.columns \
+                and 'Data de Vencimento' in tabela.columns and 'PU' in tabela.columns \
+                and 'Valor da Cota' in tabela.columns:
+            # Adicionar a tabela ao DataFrame
+            dados_df = pd.concat([dados_df, tabela], ignore_index=True)
 
-# Aqui você deve implementar a lógica para extrair as informações necessárias do texto do PDF.
-# Este é um exemplo simplificado e você precisará ajustá-lo de acordo com o formato do seu extrato.
-data = {
-    'nome do ativo': [],
-    'data de compra': [],
-    'data de vencimento': [],
-    'preço unico (PU)': [],
-    'valor da cota': [],
-    # adicione aqui outras informações necessárias
-}
+    # Salvar os dados no Excel
+    dados_df.to_excel(output_excel, index=False, engine='openpyxl')
 
-write_to_excel(data, 'extrato.xlsx')
+if __name__ == "__main__":
+    # Substitua 'extrato.pdf' pelo caminho do seu arquivo PDF de extrato
+    arquivo_pdf = 'extrato.pdf'
+    
+    # Substitua 'saida.xlsx' pelo caminho desejado para o arquivo Excel de saída
+    arquivo_excel = 'saida.xlsx'
+
+    # Chamar a função para extrair dados e criar o arquivo Excel
+    extrair_dados_pdf(arquivo_pdf, arquivo_excel)
+
+    print(f'Dados extraídos do PDF e salvos em {arquivo_excel}')
