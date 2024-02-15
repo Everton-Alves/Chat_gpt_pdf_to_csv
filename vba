@@ -1,24 +1,33 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
+import PyPDF2
+import pandas as pd
 
-# Configurando o caminho do ChromeDriver (substitua pelo seu caminho)
-chrome_driver_path = '/caminho/para/seu/chromedriver.exe'
+def extract_info_from_pdf(file_path):
+    pdf_file_obj = open(file_path, 'rb')
+    pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
+    num_pages = pdf_reader.numPages
+    text = ''
+    for page in range(num_pages):
+        page_obj = pdf_reader.getPage(page)
+        text += page_obj.extractText()
+    pdf_file_obj.close()
+    return text
 
-# Inicializando o navegador Chrome
-driver = webdriver.Chrome(executable_path=chrome_driver_path)
+def write_to_excel(data, file_path):
+    df = pd.DataFrame(data)
+    df.to_excel(file_path, index=False)
 
-# Abrindo a página da web
-url = "URL_DA_SUA_PAGINA"
-driver.get(url)
+# Exemplo de uso
+pdf_text = extract_info_from_pdf('extrato.pdf')
 
-# Construindo o XPath usando starts-with
-xpath_do_elemento = '//*[starts-with(@id, "ember")]'
+# Aqui você deve implementar a lógica para extrair as informações necessárias do texto do PDF.
+# Este é um exemplo simplificado e você precisará ajustá-lo de acordo com o formato do seu extrato.
+data = {
+    'nome do ativo': [],
+    'data de compra': [],
+    'data de vencimento': [],
+    'preço unico (PU)': [],
+    'valor da cota': [],
+    # adicione aqui outras informações necessárias
+}
 
-# Localizando o elemento pelo XPath
-elemento_ember = driver.find_element(By.XPATH, xpath_do_elemento)
-
-# Imprimindo o ID do elemento encontrado
-print("ID do elemento 'ember':", elemento_ember.get_attribute("id"))
-
-# Fechando o navegador
-driver.quit()
+write_to_excel(data, 'extrato.xlsx')
