@@ -59,7 +59,8 @@ Sub ExtrairInformacoesEmails()
     
     ' Loop através dos e-mails na pasta selecionada
     For Each Item In Folder.Items
-        If Item.Class = olMail Then
+        ' Certifique-se de que o Item é um e-mail
+        If TypeName(Item) = "MailItem" Then
             Set olMail = Item
             If olMail.ReceivedTime >= DateRangeStart And olMail.ReceivedTime <= DateRangeEnd Then
                 ' Verificar se o e-mail possui o título desejado
