@@ -1,36 +1,39 @@
-Function ExecutarQuery() As Scripting.Dictionary
-    Dim conn As Object
-    Dim rs As Object
-    Dim strSQL As String
-    Dim resultado As New Scripting.Dictionary ' Certifique-se de ter a referência para a biblioteca 'Microsoft Scripting Runtime'
-
-    ' Inicializa a conexão
-    Set conn = CreateObject("ADODB.Connection")
-    conn.ConnectionString = "sua_string_de_conexao_aqui"
-    conn.Open
-
-    ' Inicializa o objeto Recordset
-    Set rs = CreateObject("ADODB.Recordset")
-
-    ' Sua consulta SQL aqui
-    strSQL = "SELECT name, real_name FROM sua_tabela"
-
-    ' Executa a consulta
-    rs.Open strSQL, conn
-
-    ' Itera sobre os resultados
-    Do Until rs.EOF
-        ' Adiciona os valores ao dicionário
-        resultado.Add rs.Fields("name").Value, rs.Fields("real_name").Value
-
-        ' Move para o próximo registro
-        rs.MoveNext
-    Loop
-
-    ' Fecha a conexão e o recordset
-    rs.Close
-    conn.Close
-
-    ' Retorna o dicionário com os resultados
-    Set ExecutarQuery = resultado
-End Function
+Sub SalvarAnexosPDF()
+    Dim objNamespace As Outlook.NameSpace
+    Dim objFolder As Outlook.MAPIFolder
+    Dim objItem As Object
+    Dim objAttachment As Outlook.Attachment
+    Dim saveFolder As String
+    Dim savePath As String
+    Dim pdfExtension As String
+    
+    ' Defina a extensão do arquivo PDF
+    pdfExtension = ".pdf"
+    
+    ' Especifique o caminho onde você deseja salvar os anexos PDF
+    saveFolder = "C:\Caminho\Para\Salvar\PDFs\"
+    
+    ' Obtenha a referência ao namespace do Outlook
+    Set objNamespace = Application.GetNamespace("MAPI")
+    
+    ' Selecione a pasta desejada (por exemplo, Caixa de Entrada)
+    Set objFolder = objNamespace.GetDefaultFolder(olFolderInbox)
+    
+    ' Percorra todos os itens na pasta
+    For Each objItem In objFolder.Items
+        If TypeOf objItem Is MailItem Then
+            ' Percorra todos os anexos no e-mail
+            For Each objAttachment In objItem.Attachments
+                ' Verifique se o anexo é um arquivo PDF
+                If Right(objAttachment.FileName, Len(pdfExtension)) = pdfExtension Then
+                    ' Construa o caminho completo para salvar o PDF
+                    savePath = saveFolder & objItem.Subject & pdfExtension
+                    ' Salve o anexo PDF
+                    objAttachment.SaveAsFile savePath
+                    ' Exiba uma mensagem informando sobre o salvamento
+                    MsgBox "Anexo PDF salvo em: " & savePath
+                End If
+            Next objAttachment
+        End If
+    Next objItem
+End Sub
