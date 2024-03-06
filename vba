@@ -1,6 +1,4 @@
-Sub SalvarAnexosPDF()
-    Dim objNamespace As Outlook.NameSpace
-    Dim objFolder As Outlook.MAPIFolder
+Sub SalvarAnexosPDFSelecionados()
     Dim objItem As Object
     Dim objAttachment As Outlook.Attachment
     Dim saveFolder As String
@@ -13,14 +11,8 @@ Sub SalvarAnexosPDF()
     ' Especifique o caminho onde você deseja salvar os anexos PDF
     saveFolder = "C:\Caminho\Para\Salvar\PDFs\"
     
-    ' Obtenha a referência ao namespace do Outlook
-    Set objNamespace = Application.GetNamespace("MAPI")
-    
-    ' Selecione a pasta desejada (por exemplo, Caixa de Entrada)
-    Set objFolder = objNamespace.GetDefaultFolder(olFolderInbox)
-    
-    ' Percorra todos os itens na pasta
-    For Each objItem In objFolder.Items
+    ' Percorra todos os itens selecionados
+    For Each objItem In Application.ActiveExplorer.Selection
         If TypeOf objItem Is MailItem Then
             ' Percorra todos os anexos no e-mail
             For Each objAttachment In objItem.Attachments
