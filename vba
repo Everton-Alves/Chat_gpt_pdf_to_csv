@@ -5,6 +5,7 @@ Sub ExtrairEArmazenarMovimentacoesFundosComDicionario()
     Dim nomeFundo As String, cnpjFundo As String
     Dim movimentacoes As Object
     Dim movimentacao As Object
+    Dim newRow As Long
     
     ' Defina a planilha onde estão os dados
     Set ws = ThisWorkbook.Sheets("fundos")
@@ -36,35 +37,19 @@ Sub ExtrairEArmazenarMovimentacoesFundosComDicionario()
             
             ' Loop até encontrar a próxima linha vazia ou uma nova movimentação
             Do While ws.Cells(i, "B").Value <> "" And Left(ws.Cells(i, 1).Value, 12) <> "Movimentação"
-                ' Crie um novo dicionário para armazenar os detalhes desta movimentação
-                Dim detalhesMovimentacao As Object
-                Set detalhesMovimentacao = CreateObject("Scripting.Dictionary")
-                
-                ' Armazene os detalhes desta movimentação no dicionário de detalhes
-                detalhesMovimentacao("Data") = ws.Cells(i, "B").Value
-                detalhesMovimentacao("Transacao") = ws.Cells(i, "C").Value
-                detalhesMovimentacao("QuantidadeCotas") = ws.Cells(i, "D").Value
-                detalhesMovimentacao("ValorCota") = ws.Cells(i, "E").Value
-                detalhesMovimentacao("ValorBruto") = ws.Cells(i, "F").Value
-                detalhesMovimentacao("IR") = ws.Cells(i, "G").Value
-                detalhesMovimentacao("IOF") = ws.Cells(i, "H").Value
-                detalhesMovimentacao("ValorLiquido") = ws.Cells(i, "I").Value
-                
-                ' Adicione este dicionário de detalhes à lista de movimentações deste fundo
-                movimentacao.Add i, detalhesMovimentacao
+                ' Adicione os detalhes desta movimentação ao dicionário de movimentações
+                movimentacao.Add i, Array(ws.Cells(i, "B").Value, ws.Cells(i, "C").Value, ws.Cells(i, "D").Value, ws.Cells(i, "E").Value, ws.Cells(i, "F").Value, ws.Cells(i, "G").Value, ws.Cells(i, "H").Value, ws.Cells(i, "I").Value)
                 
                 ' Avance para a próxima linha
                 i = i + 1
             Loop
             
-            ' Adicione este dicionário de movimentações ao dicionário principal, usando o nome do fundo como chave
+            ' Adicione o dicionário de movimentações ao dicionário principal, usando o nome do fundo como chave
             movimentacoes.Add nomeFundo, movimentacao
         End If
     Next i
     
-    ' Agora, vamos transferir os dados do dicionário para a nova aba
-    
-    ' Escreva os cabeçalhos
+    ' Escreva os cabeçalhos na nova aba
     wsMovimentacoes.Range("A1").Value = "Fundo"
     wsMovimentacoes.Range("B1").Value = "CNPJ"
     wsMovimentacoes.Range("C1").Value = "Data"
@@ -81,20 +66,25 @@ Sub ExtrairEArmazenarMovimentacoesFundosComDicionario()
     
     ' Loop através do dicionário de movimentações
     For Each nomeFundo In movimentacoes.keys
+        ' Obtenha o dicionário de movimentações deste fundo
         Set movimentacao = movimentacoes(nomeFundo)
         
         ' Loop através das movimentações deste fundo
-        For Each key In movimentacao.keys
-            Set detalhesMovimentacao = movimentacao(key)
-            
+        For i = 0 To movimentacao.Count - 1
             ' Escreva os detalhes desta movimentação na nova aba
             wsMovimentacoes.Cells(newRow, "A").Value = nomeFundo
             wsMovimentacoes.Cells(newRow, "B").Value = cnpjFundo
-            wsMovimentacoes.Cells(newRow, "C").Value = detalhesMovimentacao("Data")
-            wsMovimentacoes.Cells(newRow, "D").Value = detalhesMovimentacao("Transacao")
-            wsMovimentacoes.Cells(newRow, "E").Value = detalhesMovimentacao("QuantidadeCotas")
-            wsMovimentacoes.Cells(newRow, "F").Value = detalhesMovimentacao("ValorCota")
-            wsMovimentacoes.Cells(newRow, "G").Value = detalhesMovimentacao("ValorBruto")
-            wsMovimentacoes.Cells(newRow, "H").Value = detalhesMovimentacao("IR")
-            wsMovimentacoes.Cells(newRow, "I").Value = detalhesMovimentacao("IOF")
-            wsMovimentacoes.Cells(newRow, "J").Value = detalhesMovimentacao("Valor
+            wsMovimentacoes.Cells(newRow, "C").Value = movimentacao(i)(0)
+            wsMovimentacoes.Cells(newRow, "D").Value = movimentacao(i)(1)
+            wsMovimentacoes.Cells(newRow, "E").Value = movimentacao(i)(2)
+            wsMovimentacoes.Cells(newRow, "F").Value = movimentacao(i)(3)
+            wsMovimentacoes.Cells(newRow, "G").Value = movimentacao(i)(4)
+            wsMovimentacoes.Cells(newRow, "H").Value = movimentacao(i)(5)
+            wsMovimentacoes.Cells(newRow, "I").Value = movimentacao(i)(6)
+            wsMovimentacoes.Cells(newRow, "J").Value = movimentacao(i)(7)
+            
+            ' Avance para a próxima linha na nova aba
+            newRow = newRow + 1
+        Next i
+    Next nomeFundo
+End Sub
