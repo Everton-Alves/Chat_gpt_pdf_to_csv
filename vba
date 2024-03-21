@@ -1,67 +1,100 @@
-Sub CopiarSheetsParaArquivoFinal()
-    Dim wb As Workbook
+Sub ExtrairEArmazenarMovimentacoesFundosComDicionario()
     Dim ws As Worksheet
-    Dim newWb As Workbook
-    Dim newRow As Long
-    Dim i As Integer
+    Dim wsMovimentacoes As Worksheet
+    Dim lastRow As Long, i As Long
+    Dim nomeFundo As String, cnpjFundo As String
+    Dim movimentacoes As Object
+    Dim movimentacao As Object
     
-    ' Desativar alertas
-    Application.DisplayAlerts = False
+    ' Defina a planilha onde estão os dados
+    Set ws = ThisWorkbook.Sheets("fundos")
     
-    ' Criar um novo arquivo final
-    Set newWb = Workbooks.Add
+    ' Crie uma nova aba para armazenar as movimentações dos fundos
+    Set wsMovimentacoes = ThisWorkbook.Sheets.Add(After:=Sheets(Sheets.Count))
+    wsMovimentacoes.Name = "fundos_movimentacao_total"
     
-    ' Renomear a primeira planilha como "Arquivo_final"
-    newWb.Sheets(1).Name = "Arquivo_final"
+    ' Inicialize o dicionário para armazenar as movimentações dos fundos
+    Set movimentacoes = CreateObject("Scripting.Dictionary")
     
-    ' Iniciar a contagem de linha para colar os dados
-    newRow = 1
+    ' Encontre a última linha na coluna A
+    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
     
-    ' Loop através de todos os arquivos na pasta atual
-    Dim Filename As String
-    Filename = Dir(ThisWorkbook.Path & "\*.xls*")
-    
-    Do While Filename <> ""
-        ' Abrir o arquivo atual
-        Set wb = Workbooks.Open(ThisWorkbook.Path & "\" & Filename)
-        
-        ' Loop através de todas as planilhas no arquivo
-        For Each ws In wb.Sheets
-            ' Copiar a largura das colunas da planilha atual
-            For i = 1 To ws.Columns.Count
-                newWb.Sheets("Arquivo_final").Columns(i).ColumnWidth = ws.Columns(i).ColumnWidth
-            Next i
+    ' Loop através das células na coluna A
+    For i = 1 To lastRow
+        If Left(ws.Cells(i, 1).Value, 12) = "Movimentação" Then
+            ' Encontrou uma linha de movimentação do fundo
             
-            ' Copiar o conteúdo da planilha atual
-            ws.UsedRange.Copy
+            ' Extrai o nome do fundo e CNPJ
+            nomeFundo = Trim(Mid(ws.Cells(i, 1).Value, 15, InStr(ws.Cells(i, 1).Value, "-") - 15))
+            cnpjFundo = Trim(Mid(ws.Cells(i, 1).Value, InStr(ws.Cells(i, 1).Value, "-") + 1))
             
-            ' Colar no arquivo final mantendo a formatação e largura das colunas
-            newWb.Sheets("Arquivo_final").Cells(newRow, 1).PasteSpecial xlPasteAllUsingSourceTheme
+            ' Crie um novo dicionário para armazenar as movimentações deste fundo
+            Set movimentacao = CreateObject("Scripting.Dictionary")
             
-            ' Atualizar a linha para a próxima cópia
-            newRow = newRow + ws.UsedRange.Rows.Count + 2
-        Next ws
+            ' Inicialize a linha atual para a próxima movimentação
+            i = i + 1
+            
+            ' Loop até encontrar a próxima linha vazia ou uma nova movimentação
+            Do While ws.Cells(i, "B").Value <> "" And Left(ws.Cells(i, 1).Value, 12) <> "Movimentação"
+                ' Crie um novo dicionário para armazenar os detalhes desta movimentação
+                Dim detalhesMovimentacao As Object
+                Set detalhesMovimentacao = CreateObject("Scripting.Dictionary")
+                
+                ' Armazene os detalhes desta movimentação no dicionário de detalhes
+                detalhesMovimentacao("Data") = ws.Cells(i, "B").Value
+                detalhesMovimentacao("Transacao") = ws.Cells(i, "C").Value
+                detalhesMovimentacao("QuantidadeCotas") = ws.Cells(i, "D").Value
+                detalhesMovimentacao("ValorCota") = ws.Cells(i, "E").Value
+                detalhesMovimentacao("ValorBruto") = ws.Cells(i, "F").Value
+                detalhesMovimentacao("IR") = ws.Cells(i, "G").Value
+                detalhesMovimentacao("IOF") = ws.Cells(i, "H").Value
+                detalhesMovimentacao("ValorLiquido") = ws.Cells(i, "I").Value
+                
+                ' Adicione este dicionário de detalhes à lista de movimentações deste fundo
+                movimentacao.Add i, detalhesMovimentacao
+                
+                ' Avance para a próxima linha
+                i = i + 1
+            Loop
+            
+            ' Adicione este dicionário de movimentações ao dicionário principal, usando o nome do fundo como chave
+            movimentacoes.Add nomeFundo, movimentacao
+        End If
+    Next i
+    
+    ' Agora, vamos transferir os dados do dicionário para a nova aba
+    
+    ' Escreva os cabeçalhos
+    wsMovimentacoes.Range("A1").Value = "Fundo"
+    wsMovimentacoes.Range("B1").Value = "CNPJ"
+    wsMovimentacoes.Range("C1").Value = "Data"
+    wsMovimentacoes.Range("D1").Value = "Transacao"
+    wsMovimentacoes.Range("E1").Value = "QuantidadeCotas"
+    wsMovimentacoes.Range("F1").Value = "ValorCota"
+    wsMovimentacoes.Range("G1").Value = "ValorBruto"
+    wsMovimentacoes.Range("H1").Value = "IR"
+    wsMovimentacoes.Range("I1").Value = "IOF"
+    wsMovimentacoes.Range("J1").Value = "ValorLiquido"
+    
+    ' Inicialize a linha atual na nova aba
+    newRow = 2
+    
+    ' Loop através do dicionário de movimentações
+    For Each nomeFundo In movimentacoes.keys
+        Set movimentacao = movimentacoes(nomeFundo)
         
-        ' Fechar o arquivo atual sem salvar alterações e sem exibir mensagens de aviso
-        wb.Close False
-        
-        ' Procurar o próximo arquivo na pasta
-        Filename = Dir
-    Loop
-    
-    ' Limpar a área de transferência
-    Application.CutCopyMode = False
-    
-    ' Salvar o novo arquivo
-    newWb.SaveAs ThisWorkbook.Path & "\Arquivo_final.xlsx"
-    
-    ' Fechar o novo arquivo sem exibir mensagens de aviso
-    newWb.Close False
-    
-    ' Ativar alertas novamente
-    Application.DisplayAlerts = True
-    
-    ' Mensagem de conclusão
-    MsgBox "Os dados foram copiados para o arquivo final com sucesso!", vbInformation
-    
-End Sub
+        ' Loop através das movimentações deste fundo
+        For Each key In movimentacao.keys
+            Set detalhesMovimentacao = movimentacao(key)
+            
+            ' Escreva os detalhes desta movimentação na nova aba
+            wsMovimentacoes.Cells(newRow, "A").Value = nomeFundo
+            wsMovimentacoes.Cells(newRow, "B").Value = cnpjFundo
+            wsMovimentacoes.Cells(newRow, "C").Value = detalhesMovimentacao("Data")
+            wsMovimentacoes.Cells(newRow, "D").Value = detalhesMovimentacao("Transacao")
+            wsMovimentacoes.Cells(newRow, "E").Value = detalhesMovimentacao("QuantidadeCotas")
+            wsMovimentacoes.Cells(newRow, "F").Value = detalhesMovimentacao("ValorCota")
+            wsMovimentacoes.Cells(newRow, "G").Value = detalhesMovimentacao("ValorBruto")
+            wsMovimentacoes.Cells(newRow, "H").Value = detalhesMovimentacao("IR")
+            wsMovimentacoes.Cells(newRow, "I").Value = detalhesMovimentacao("IOF")
+            wsMovimentacoes.Cells(newRow, "J").Value = detalhesMovimentacao("Valor
