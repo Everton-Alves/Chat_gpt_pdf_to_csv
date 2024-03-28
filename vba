@@ -12,14 +12,14 @@ Sub ExtrairPartes()
     Set regex = CreateObject("VBScript.RegExp")
     
     ' Defina o padrão regex para encontrar as partes desejadas
-    pattern = "(\b[A-Za-z]+\s*\d+\b)|(\b\d+-\d+\b)|(\b\d{2}\.\d{2}\.\d{4}\b)"
+    pattern = "\b[A-Za-z]+\s+\d+(?:\s*-\s*\d+)?|\b\d+-\d+|\b\d{2}\.\d{2}\.\d{4}"
     
     ' Configure o padrão regex
     With regex
         .Global = True
         .MultiLine = True
         .IgnoreCase = True
-        .Pattern = pattern
+        .pattern = pattern
     End With
     
     ' Execute a correspondência na string de entrada
@@ -27,10 +27,6 @@ Sub ExtrairPartes()
     
     ' Exiba as partes extraídas
     For Each Match In matches
-        For i = 0 To Match.SubMatches.Count - 1
-            If Match.SubMatches(i) <> "" Then
-                MsgBox "Parte " & i + 1 & ": " & Match.SubMatches(i)
-            End If
-        Next i
+        MsgBox Match.Value
     Next Match
 End Sub
