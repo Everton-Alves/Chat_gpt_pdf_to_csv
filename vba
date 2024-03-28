@@ -1,22 +1,36 @@
-Function ExtrairTextoDepoisDaBarra(texto As String) As String
-    Dim posicao_barra As Integer
-    Dim texto_extrair As String
+Sub ExtrairPartes()
+    Dim regex As Object
+    Dim matches As Object
+    Dim inputString As String
+    Dim pattern As String
+    Dim i As Integer
     
-    ' Encontrar a posição da última barra "/"
-    posicao_barra = InStrRev(texto, "/")
+    ' Defina a string de entrada
+    inputString = "462159-ADVM - AS 65 36309-9 - 29.02.2024"
     
-    ' Verificar se a barra foi encontrada
-    If posicao_barra > 0 Then
-        ' Extrair o texto após a barra
-        texto_extrair = Mid(texto, posicao_barra + 1)
-        
-        ' Remover espaços em branco nos lados
-        texto_extrair = Trim(texto_extrair)
-        
-        ' Retornar o texto extraído
-        ExtrairTextoDepoisDaBarra = texto_extrair
-    Else
-        ' Se não houver barra, retornar uma string vazia
-        ExtrairTextoDepoisDaBarra = ""
-    End If
-End Function
+    ' Crie um objeto RegExp
+    Set regex = CreateObject("VBScript.RegExp")
+    
+    ' Defina o padrão regex para encontrar as partes desejadas
+    pattern = "(\b[A-Za-z]+\s*\d+\b)|(\b\d+-\d+\b)|(\b\d{2}\.\d{2}\.\d{4}\b)"
+    
+    ' Configure o padrão regex
+    With regex
+        .Global = True
+        .MultiLine = True
+        .IgnoreCase = True
+        .Pattern = pattern
+    End With
+    
+    ' Execute a correspondência na string de entrada
+    Set matches = regex.Execute(inputString)
+    
+    ' Exiba as partes extraídas
+    For Each Match In matches
+        For i = 0 To Match.SubMatches.Count - 1
+            If Match.SubMatches(i) <> "" Then
+                MsgBox "Parte " & i + 1 & ": " & Match.SubMatches(i)
+            End If
+        Next i
+    Next Match
+End Sub
