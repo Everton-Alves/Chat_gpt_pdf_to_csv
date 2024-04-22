@@ -1,7 +1,11 @@
-Exception has occurred: PermissionError
-[Errno 13] Permission denied
-  File "/home/everton/Desktop/teste.py", line 10, in __init__
-    self.socket.bind((self.host, self.port))
-  File "/home/everton/Desktop/teste.py", line 64, in <module>
-    server = HTTPServer("localhost", 80)
-PermissionError: [Errno 13] Permission denied
+Function TextoApósUltimoEspaco(texto As String) As String
+    Dim posEspaco As Long
+    
+    posEspaco = InStrRev(texto, " ")
+    
+    If posEspaco > 0 Then
+        TextoApósUltimoEspaco = Mid(texto, posEspaco + 1)
+    Else
+        TextoApósUltimoEspaco = texto
+    End If
+End Function
