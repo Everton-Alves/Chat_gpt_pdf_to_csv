@@ -21,10 +21,10 @@ Sub InserirInformacoes(ByVal informacao1 As String, ByVal informacao2 As String)
     ' Determina a última linha preenchida na coluna A
     ultimaLinha = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
     
-    ' Verifica se a informação já existe na coluna A
+    ' Verifica se a informação já existe em toda a coluna A e B
     informacaoExiste = False
     For i = 1 To ultimaLinha
-        If ws.Cells(i, 1).Value = informacao1 Then
+        If ws.Cells(i, 1).Value = informacao1 And ws.Cells(i, 2).Value = informacao2 Then
             informacaoExiste = True
             Exit For
         End If
