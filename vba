@@ -1,44 +1,78 @@
-Sub InserirInformacoes(ByVal informacao1 As String, ByVal informacao2 As String)
-    Dim wb As Workbook
-    Dim ws As Worksheet
-    Dim ultimaLinha As Long
+Sub ManipularDados()
+
+    ' Declarar variáveis
+    Dim wbOrigem As Workbook
+    Dim wsOrigem As Worksheet
+    Dim rngFiltrado As Range
+    Dim rngCopiar As Range
+    Dim wbDestino As Workbook
+    Dim wsDestino As Worksheet
     Dim i As Long
-    Dim informacaoExiste As Boolean
     
-    ' Verifica se o arquivo "planilha.xlsx" está aberto
-    On Error Resume Next
-    Set wb = Workbooks("planilha.xlsx")
-    On Error GoTo 0
+    ' Abrir arquivo Excel de origem
+    Set wbOrigem = Workbooks.Open("Caminho_do_Arquivo_de_Origem.xlsx")
+    Set wsOrigem = wbOrigem.Sheets("Nome_da_Aba_de_Origem")
     
-    ' Se o arquivo não estiver aberto, abre-o
-    If wb Is Nothing Then
-        Set wb = Workbooks.Open("Caminho\para\o\arquivo\planilha.xlsx")
-    End If
+    ' Filtrar dados na coluna G
+    wsOrigem.AutoFilterMode = False
+    wsOrigem.Range("G1").AutoFilter Field:=7, Criteria1:="Critério_de_Filtro"
+    Set rngFiltrado = wsOrigem.AutoFilter.Range
     
-    ' Define a planilha onde serão inseridas as informações
-    Set ws = wb.Sheets("Extratos_renomeados")
+    ' Copiar dados filtrados
+    rngFiltrado.Copy
     
-    ' Determina a última linha preenchida na coluna A
-    ultimaLinha = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+    ' Abrir novo arquivo Excel de destino e colar dados
+    Set wbDestino = Workbooks.Add
+    Set wsDestino = wbDestino.Sheets(1)
+    wsDestino.Range("A1").PasteSpecial Paste:=xlPasteValues
     
-    ' Verifica se a informação já existe em toda a coluna A e B
-    informacaoExiste = False
-    For i = 1 To ultimaLinha
-        If ws.Cells(i, 1).Value = informacao1 And ws.Cells(i, 2).Value = informacao2 Then
-            informacaoExiste = True
-            Exit For
-        End If
-    Next i
+    ' Excluir colunas A, B, C e E
+    wsDestino.Columns("A:C").Delete
+    wsDestino.Columns("E").Delete
     
-    ' Se a informação não existe, insere as informações nas colunas A e B
-    If Not informacaoExiste Then
-        ws.Cells(ultimaLinha + 1, 1).Value = informacao1
-        ws.Cells(ultimaLinha + 1, 2).Value = informacao2
-    End If
+    ' Incluir duas novas colunas B e C
+    wsDestino.Columns("B:C").Insert Shift:=xlToRight
     
-    ' Salva e fecha o arquivo
-    wb.Save
-    wb.Close
+    ' Separar texto na coluna A por "-"
+    wsDestino.Columns("A").TextToColumns Destination:=Range("A1"), DataType:=xlDelimited, _
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=False, _
+        Semicolon:=False, Comma:=False, Space:=False, Other:=True, OtherChar:="-", _
+        FieldInfo:=Array(Array(1, 1), Array(2, 1))
     
-    MsgBox "Informações inseridas com sucesso!", vbInformation
+    ' Separar espaço na coluna B por nada
+    wsDestino.Columns("B").Replace What:=" ", Replacement:="", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    
+    ' Colocar nome dos fundos na coluna B
+    
+    ' Colocar nome Sigla na coluna E
+    
+    ' VLOOKUP na coluna G com a aba "de para"
+    
+    ' Colocar nome na coluna F para ATIVO
+    wsDestino.Columns("F").Value = "ATIVO"
+    
+    ' Ordenar coluna F em ordem alfabética
+    wsDestino.Columns("F").Sort key1:=Range("F1"), order1:=xlAscending, Header:=xlYes
+    
+    ' Ordenar coluna B em ordem alfabética
+    wsDestino.Columns("B").Sort key1:=Range("B1"), order1:=xlAscending, Header:=xlYes
+    
+    ' Inserir tabela dinâmica em nova aba
+    Dim wsPivot As Worksheet
+    Set wsPivot = wbDestino.Sheets.Add(After:=wbDestino.Sheets(wbDestino.Sheets.Count))
+    wsPivot.Name = "Tabela Dinâmica"
+    Dim tblPivot As PivotTable
+    Dim tblPivotRange As Range
+    Set tblPivotRange = wsDestino.Range("A1").CurrentRegion
+    Set tblPivot = wsPivot.PivotTableWizard(SourceType:=xlDatabase, SourceData:=tblPivotRange)
+    
+    ' Transformar coluna C da tabela dinâmica em valor
+    tblPivot.PivotFields("Nome_da_Coluna_C").Orientation = xlDataField
+    tblPivot.PivotFields("Nome_da_Coluna_C").Function = xlSum
+    
+    ' Fechar arquivo de origem sem salvar alterações
+    wbOrigem.Close SaveChanges:=False
+    
 End Sub
