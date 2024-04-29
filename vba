@@ -1,25 +1,54 @@
-Function CopiarDadosDeOutraPlanilha(caminhoDaPlanilha As String, nomeDaPlanilha As String)
-    Dim wbDestino As Workbook
-    Dim wbOrigem As Workbook
-    Dim wsOrigem As Worksheet
-    Dim wsDestino As Worksheet
-    Dim ultimaLinhaDestino As Long
+Sub EncontrarRangesPorCodigo()
+    Dim ws As Worksheet
+    Dim codigo As Variant
+    Dim rngCodigo As Range
+    Dim ultimaLinha As Long
+    Dim linhaInicio As Long
+    Dim linhaFim As Long
+    Dim listaCodigos As Variant
+    Dim i As Long
     
-    ' Abrir a planilha destino
-    Set wbDestino = ThisWorkbook
-    Set wsDestino = wbDestino.Sheets(nomeDaPlanilha)
-    ultimaLinhaDestino = wsDestino.Cells(wsDestino.Rows.Count, 1).End(xlUp).Row + 1 ' Próxima linha vazia na planilha destino
+    ' Defina a planilha onde estão os dados
+    Set ws = ThisWorkbook.Sheets("Planilha1")
     
-    ' Abrir a planilha de origem
-    Set wbOrigem = Workbooks.Open(caminhoDaPlanilha)
-    Set wsOrigem = wbOrigem.Sheets(1) ' Pode ser alterado para o nome da planilha de origem
+    ' Encontre a lista de códigos
+    ultimaLinha = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row ' Última linha com dados na coluna A
+    listaCodigos = ws.Range("A1:A" & ultimaLinha).Value
     
-    ' Copiar os dados da planilha de origem
-    wsOrigem.UsedRange.Copy
-    
-    ' Colar os dados na planilha destino
-    wsDestino.Cells(ultimaLinhaDestino, 1).PasteSpecial Paste:=xlPasteValues
-    
-    ' Fechar a planilha de origem sem salvar
-    wbOrigem.Close SaveChanges:=False
-End Function
+    ' Iterar sobre cada código na lista
+    For i = LBound(listaCodigos) To UBound(listaCodigos)
+        codigo = listaCodigos(i, 1)
+        
+        ' Se o código atual não for vazio
+        If Not IsEmpty(codigo) Then
+            linhaInicio = 0
+            linhaFim = 0
+            
+            ' Encontrar o range para o código atual
+            For j = i To ultimaLinha
+                If ws.Cells(j, 1).Value = codigo Then
+                    If linhaInicio = 0 Then
+                        linhaInicio = j ' Encontrou o início do range
+                    End If
+                Else
+                    If linhaInicio <> 0 Then
+                        linhaFim = j - 1 ' Encontrou o fim do range
+                        Exit For
+                    End If
+                End If
+            Next j
+            
+            ' Se o código for encontrado
+            If linhaInicio <> 0 Then
+                ' Defina o range para o código atual
+                Set rngCodigo = ws.Range(ws.Cells(linhaInicio, 1), ws.Cells(linhaFim, ws.Columns.Count).End(xlToLeft))
+                
+                ' Faça o que precisar com o range (por exemplo, passar para outra função)
+                ' Exemplo: OutraFuncao rngCodigo
+                
+                ' Limpe o range para o próximo código
+                Set rngCodigo = Nothing
+            End If
+        End If
+    Next i
+End Sub
