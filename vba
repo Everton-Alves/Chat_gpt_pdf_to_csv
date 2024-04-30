@@ -16,7 +16,9 @@ Function ObterNovoRange(rngOriginal As String, ByVal numColunas As Integer) As R
     colunaInicial = Left(Mid(rngOriginal, 2), 1)
     
     ' Calcular a coluna final com base no número de colunas
-    colunaFinal = Mid(ws.Cells(1, ws.Columns.Count).End(xlToLeft).Address, 2, 1 + numColunas)
+    Dim colunaInicialNum As Integer
+    colunaInicialNum = WorksheetFunction.Column(ws.Range(colunaInicial & 1))
+    colunaFinal = Split(ws.Cells(1, colunaInicialNum + numColunas - 1).Address, "$")(1)
     
     ' Construa a string para o novo intervalo
     strRange = colunaInicial & linhaInicial & ":" & colunaFinal & linhaFinal
