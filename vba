@@ -1,17 +1,23 @@
-Sub AdicionarBordas(rngString As String)
+Sub AdicionarBorda()
     Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim lastCol As Long
     Dim rng As Range
     
-    ' Defina a planilha onde você deseja adicionar as bordas
-    Set ws = ThisWorkbook.Sheets("Planilha1")
+    ' Defina a planilha "Template"
+    Set ws = ThisWorkbook.Sheets("Template")
     
-    ' Converta a string em um objeto Range
-    Set rng = ws.Range(rngString)
+    ' Encontre a última célula preenchida na planilha "Template"
+    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+    lastCol = ws.Cells(2, ws.Columns.Count).End(xlToLeft).Column
     
-    ' Adicione bordas ao intervalo especificado
+    ' Defina o intervalo a ser aplicada a borda
+    Set rng = ws.Range("A2:" & Cells(lastRow, lastCol).Address)
+    
+    ' Aplique a borda ao intervalo
     With rng.Borders
-        .LineStyle = xlContinuous ' Estilo de linha contínua
-        .Color = vbBlack ' Cor da linha preta
-        .Weight = xlThin ' Espessura da linha fina
+        .LineStyle = xlContinuous
+        .Color = vbBlack ' Cor da borda (preto)
+        .Weight = xlThin ' Espessura da borda (fina)
     End With
 End Sub
