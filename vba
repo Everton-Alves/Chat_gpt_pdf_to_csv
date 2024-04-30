@@ -1,18 +1,9 @@
-Sub Teste()
-    Dim ws As Worksheet
-    Dim rngPorCodigo As Object
-    Dim key As Variant
+Function ObterNovoRange(rngOriginal As Range, ByVal numColunas As Integer) As Range
+    Dim novoRange As Range
     
-    ' Defina a planilha onde estão os dados
-    Set ws = ThisWorkbook.Sheets("Planilha1")
+    ' Redimensionar o intervalo original para incluir o número desejado de colunas
+    Set novoRange = rngOriginal.Resize(1, numColunas)
     
-    ' Chame a função para obter os ranges por código na coluna 1 (por exemplo)
-    Set rngPorCodigo = ObterRangesPorCodigo(ws, 1)
-    
-    ' Itere sobre o dicionário para acessar os intervalos de células para cada código
-    For Each key In rngPorCodigo.keys
-        Debug.Print "Código: " & key
-        Debug.Print "Range: " & rngPorCodigo(key).Address
-        Debug.Print
-    Next key
-End Sub
+    ' Retornar o novo intervalo
+    Set ObterNovoRange = novoRange
+End Function
