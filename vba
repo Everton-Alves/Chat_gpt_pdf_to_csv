@@ -1,4 +1,4 @@
-Function ObterNovoRange(rngOriginal As String) As Range
+Function ObterNovoRange(rngOriginal As String, ByVal numColunas As Integer) As Range
     Dim ws As Worksheet
     Dim strRange As String
     Dim rng As Range
@@ -14,7 +14,9 @@ Function ObterNovoRange(rngOriginal As String) As Range
     linhaInicial = Val(Mid(rngOriginal, 2, InStr(rngOriginal, ":") - 2))
     linhaFinal = Val(Mid(rngOriginal, InStr(rngOriginal, ":") + 2, Len(rngOriginal) - InStr(rngOriginal, ":") - 1))
     colunaInicial = Left(Mid(rngOriginal, 2), 1)
-    colunaFinal = Left(Mid(rngOriginal, InStr(rngOriginal, ":") + 1), 1)
+    
+    ' Calcular a coluna final com base no número de colunas
+    colunaFinal = Mid(ws.Cells(1, ws.Columns.Count).End(xlToLeft).Address, 2, 1 + numColunas)
     
     ' Construa a string para o novo intervalo
     strRange = colunaInicial & linhaInicial & ":" & colunaFinal & linhaFinal
