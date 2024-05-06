@@ -1,23 +1,35 @@
-Sub AdicionarBorda()
-    Dim ws As Worksheet
-    Dim lastRow As Long
-    Dim lastCol As Long
-    Dim rng As Range
+Function RemoverZerosEsquerda(nomeArquivo As String) As String
+    Dim partes() As String
+    Dim parte1 As String
+    Dim parte2 As String
     
-    ' Defina a planilha "Template"
-    Set ws = ThisWorkbook.Sheets("Template")
+    ' Dividir o nome do arquivo em partes usando o traço "-"
+    partes = Split(nomeArquivo, "-")
     
-    ' Encontre a última célula preenchida na planilha "Template"
-    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
-    lastCol = ws.Cells(2, ws.Columns.Count).End(xlToLeft).Column
+    ' Remover zeros à esquerda da primeira parte
+    parte1 = Trim(StrConv(CLng(Val(partes(0))), vbUnicode))
     
-    ' Defina o intervalo a ser aplicada a borda
-    Set rng = ws.Range("A2:" & Cells(lastRow, lastCol).Address)
+    ' Remover zeros à esquerda da segunda parte, se existir
+    If UBound(partes) > 0 Then
+        parte2 = Trim(StrConv(CLng(Val(partes(1))), vbUnicode))
+    Else
+        parte2 = ""
+    End If
     
-    ' Aplique a borda ao intervalo
-    With rng.Borders
-        .LineStyle = xlContinuous
-        .Color = vbBlack ' Cor da borda (preto)
-        .Weight = xlThin ' Espessura da borda (fina)
-    End With
+    ' Retornar a numeração sem zeros à esquerda
+    RemoverZerosEsquerda = parte1 & IIf(Len(parte2) > 0, "-" & parte2, "")
+End Function
+
+Sub Teste()
+    Dim nomeArquivo As String
+    Dim numSemZeros As String
+    
+    ' Exemplo de nome de arquivo com zeros à esquerda
+    nomeArquivo = "0001234-0012341234_texto.pdf"
+    
+    ' Chamada da função para remover zeros à esquerda
+    numSemZeros = RemoverZerosEsquerda(nomeArquivo)
+    
+    ' Exibir o resultado
+    MsgBox "Número sem zeros à esquerda: " & numSemZeros
 End Sub
