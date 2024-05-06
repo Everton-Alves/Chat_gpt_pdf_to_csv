@@ -1,35 +1,41 @@
-Function RemoverZerosEsquerda(nomeArquivo As String) As String
-    Dim partes() As String
-    Dim parte1 As String
-    Dim parte2 As String
+Function ExtrairNumeracao(ByVal nomeArquivo As String) As String
+    Dim regex As Object
+    Dim matches As Object
+    Dim match As Object
+    Dim resultado As String
     
-    ' Dividir o nome do arquivo em partes usando o traço "-"
-    partes = Split(nomeArquivo, "-")
+    ' Inicializar o objeto regex
+    Set regex = CreateObject("VBScript.RegExp")
     
-    ' Remover espaços em branco da primeira parte
-    parte1 = Replace(Trim(partes(0)), " ", "")
+    ' Definir o padrão de busca para encontrar os números com zeros à esquerda
+    regex.Pattern = "\b0*([1-9][0-9]*-[0-9][0-9]*)\b"
     
-    ' Remover espaços em branco da segunda parte, se existir
-    If UBound(partes) > 0 Then
-        parte2 = Replace(Trim(partes(1)), " ", "")
-    Else
-        parte2 = ""
+    ' Executar a busca no nome do arquivo
+    If regex.Test(nomeArquivo) Then
+        ' Obter todas as correspondências encontradas
+        Set matches = regex.Execute(nomeArquivo)
+        
+        ' Iterar sobre as correspondências encontradas
+        For Each match In matches
+            ' Extrair o valor da correspondência
+            resultado = match.SubMatches(0)
+        Next match
     End If
     
-    ' Retornar a numeração sem espaços em branco entre os números
-    RemoverZerosEsquerda = parte1 & IIf(Len(parte2) > 0, "-" & parte2, "")
+    ' Retornar o resultado
+    ExtrairNumeracao = resultado
 End Function
 
 Sub Teste()
     Dim nomeArquivo As String
-    Dim numSemZeros As String
+    Dim numeracao As String
     
-    ' Exemplo de nome de arquivo com espaços entre os números
-    nomeArquivo = " 0001234 - 0012341234_texto.pdf "
+    ' Nome do arquivo de exemplo
+    nomeArquivo = "001234-0012341234_textoQualquer.pdf"
     
-    ' Chamada da função para remover espaços entre os números
-    numSemZeros = RemoverZerosEsquerda(nomeArquivo)
+    ' Chamada da função para extrair a numeração
+    numeracao = ExtrairNumeracao(nomeArquivo)
     
-    ' Exibir o resultado
-    MsgBox "Número sem espaços entre os números: " & numSemZeros
+    ' Exibir a numeração extraída
+    MsgBox "Numeração extraída: " & numeracao
 End Sub
