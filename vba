@@ -6,17 +6,17 @@ Function RemoverZerosEsquerda(nomeArquivo As String) As String
     ' Dividir o nome do arquivo em partes usando o traço "-"
     partes = Split(nomeArquivo, "-")
     
-    ' Remover zeros à esquerda da primeira parte
-    parte1 = Trim(StrConv(CLng(Val(Trim(partes(0)))), vbUnicode))
+    ' Remover espaços em branco da primeira parte
+    parte1 = Replace(Trim(partes(0)), " ", "")
     
-    ' Remover zeros à esquerda da segunda parte, se existir
+    ' Remover espaços em branco da segunda parte, se existir
     If UBound(partes) > 0 Then
-        parte2 = Trim(StrConv(CLng(Val(Trim(partes(1)))), vbUnicode))
+        parte2 = Replace(Trim(partes(1)), " ", "")
     Else
         parte2 = ""
     End If
     
-    ' Retornar a numeração sem zeros à esquerda
+    ' Retornar a numeração sem espaços em branco entre os números
     RemoverZerosEsquerda = parte1 & IIf(Len(parte2) > 0, "-" & parte2, "")
 End Function
 
@@ -24,12 +24,12 @@ Sub Teste()
     Dim nomeArquivo As String
     Dim numSemZeros As String
     
-    ' Exemplo de nome de arquivo com zeros à esquerda
-    nomeArquivo = " 0001234-0012341234_texto.pdf "
+    ' Exemplo de nome de arquivo com espaços entre os números
+    nomeArquivo = " 0001234 - 0012341234_texto.pdf "
     
-    ' Chamada da função para remover zeros à esquerda
+    ' Chamada da função para remover espaços entre os números
     numSemZeros = RemoverZerosEsquerda(nomeArquivo)
     
     ' Exibir o resultado
-    MsgBox "Número sem zeros à esquerda: " & numSemZeros
+    MsgBox "Número sem espaços entre os números: " & numSemZeros
 End Sub
