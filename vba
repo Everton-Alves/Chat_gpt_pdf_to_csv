@@ -7,11 +7,11 @@ Function RemoverZerosEsquerda(nomeArquivo As String) As String
     partes = Split(nomeArquivo, "-")
     
     ' Remover zeros à esquerda da primeira parte
-    parte1 = Trim(StrConv(CLng(Val(partes(0))), vbUnicode))
+    parte1 = Trim(StrConv(CLng(Val(Trim(partes(0)))), vbUnicode))
     
     ' Remover zeros à esquerda da segunda parte, se existir
     If UBound(partes) > 0 Then
-        parte2 = Trim(StrConv(CLng(Val(partes(1))), vbUnicode))
+        parte2 = Trim(StrConv(CLng(Val(Trim(partes(1)))), vbUnicode))
     Else
         parte2 = ""
     End If
@@ -25,7 +25,7 @@ Sub Teste()
     Dim numSemZeros As String
     
     ' Exemplo de nome de arquivo com zeros à esquerda
-    nomeArquivo = "0001234-0012341234_texto.pdf"
+    nomeArquivo = " 0001234-0012341234_texto.pdf "
     
     ' Chamada da função para remover zeros à esquerda
     numSemZeros = RemoverZerosEsquerda(nomeArquivo)
