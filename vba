@@ -7,8 +7,8 @@ Function ExtrairNumeracao(ByVal nomeArquivo As String) As String
     ' Inicializar o objeto regex
     Set regex = CreateObject("VBScript.RegExp")
     
-    ' Definir o padrão de busca para encontrar os números com zeros à esquerda
-    regex.Pattern = "\b0*([1-9][0-9]*-[0-9][0-9]*)\b"
+    ' Definir o padrão de busca para encontrar os números no formato desejado
+    regex.Pattern = "(\d{4})-(\d{8})_\w+\.pdf"
     
     ' Executar a busca no nome do arquivo
     If regex.Test(nomeArquivo) Then
@@ -18,7 +18,7 @@ Function ExtrairNumeracao(ByVal nomeArquivo As String) As String
         ' Iterar sobre as correspondências encontradas
         For Each match In matches
             ' Extrair o valor da correspondência
-            resultado = match.SubMatches(0)
+            resultado = match.SubMatches(0) & "-" & match.SubMatches(1)
         Next match
     End If
     
@@ -31,7 +31,7 @@ Sub Teste()
     Dim numeracao As String
     
     ' Nome do arquivo de exemplo
-    nomeArquivo = "001234-0012341234_textoQualquer.pdf"
+    nomeArquivo = "001234-0012341234_TextoVariavel.pdf"
     
     ' Chamada da função para extrair a numeração
     numeracao = ExtrairNumeracao(nomeArquivo)
