@@ -1,15 +1,32 @@
-Assunto: Alteração no Procedimento de Solicitação de "De Acordo"
-
-Prezados,
-
-Espero que todos estejam bem.
-
-Gostaríamos de informá-los sobre uma importante alteração no procedimento de solicitação de "De acordo" para o envio de relatórios. Conforme nossa política atualizada, a prática de solicitar um "De acordo permanente" não será mais permitida. A partir de agora, será necessário solicitar um "De acordo" mensal com o Team Leader, caso existam extratos pendentes.
-
-Entendemos que essa mudança pode demandar uma adaptação inicial, mas acreditamos que a solicitação mensal de "De acordo" permitirá um controle mais eficiente e atualizado dos processos, além de garantir maior precisão nas nossas atividades.
-
-Pedimos a todos que, a partir do próximo mês, atentem para essa nova exigência e se organizem para solicitar o "De acordo" necessário dentro dos prazos estabelecidos. Em caso de dúvidas ou necessidade de esclarecimentos adicionais, por favor, entrem em contato com a equipe de suporte.
-
-Agradecemos a compreensão e a colaboração de todos.
-
-Atenciosamente
+Sub OrganizarDadosEmOrdem(nomePlanilha As String, intervalo As String)
+    Dim ws As Worksheet
+    Dim rng As Range
+    
+    ' Definir a planilha
+    On Error Resume Next
+    Set ws = ThisWorkbook.Sheets(nomePlanilha)
+    On Error GoTo 0
+    
+    ' Verificar se a planilha foi encontrada
+    If ws Is Nothing Then
+        MsgBox "A planilha " & nomePlanilha & " não foi encontrada.", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Definir o intervalo a ser organizado
+    On Error Resume Next
+    Set rng = ws.Range(intervalo)
+    On Error GoTo 0
+    
+    ' Verificar se o intervalo é válido
+    If rng Is Nothing Then
+        MsgBox "O intervalo " & intervalo & " é inválido.", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Organizar o intervalo em ordem crescente
+    rng.Sort Key1:=rng.Cells(1, 1), Order1:=xlAscending, Header:=xlNo
+    
+    ' Informar ao usuário que a organização foi concluída
+    MsgBox "Os dados foram organizados em ordem crescente.", vbInformation
+End Sub
