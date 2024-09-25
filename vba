@@ -1,32 +1,17 @@
-Sub OrganizarDadosEmOrdem(nomePlanilha As String, intervalo As String)
+Function IsSheetInCopyProcess(SheetName As String) As Boolean
     Dim ws As Worksheet
-    Dim rng As Range
+    Dim Found As Boolean
+    Found = False
     
-    ' Definir a planilha
-    On Error Resume Next
-    Set ws = ThisWorkbook.Sheets(nomePlanilha)
-    On Error GoTo 0
+    ' Percorre todas as planilhas do workbook
+    For Each ws In ThisWorkbook.Sheets
+        ' Verifica se o nome da planilha atual coincide com o nome passado
+        If ws.Name = SheetName Then
+            Found = True
+            Exit For
+        End If
+    Next ws
     
-    ' Verificar se a planilha foi encontrada
-    If ws Is Nothing Then
-        MsgBox "A planilha " & nomePlanilha & " não foi encontrada.", vbExclamation
-        Exit Sub
-    End If
-    
-    ' Definir o intervalo a ser organizado
-    On Error Resume Next
-    Set rng = ws.Range(intervalo)
-    On Error GoTo 0
-    
-    ' Verificar se o intervalo é válido
-    If rng Is Nothing Then
-        MsgBox "O intervalo " & intervalo & " é inválido.", vbExclamation
-        Exit Sub
-    End If
-    
-    ' Organizar o intervalo em ordem crescente
-    rng.Sort Key1:=rng.Cells(1, 1), Order1:=xlAscending, Header:=xlNo
-    
-    ' Informar ao usuário que a organização foi concluída
-    MsgBox "Os dados foram organizados em ordem crescente.", vbInformation
-End Sub
+    ' Retorna True se a planilha foi encontrada no processo
+    IsSheetInCopyProcess = Found
+End Function
