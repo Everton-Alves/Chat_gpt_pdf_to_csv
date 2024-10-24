@@ -5,10 +5,16 @@ Sub ConsolidarPlanilhas()
     Dim wsOrigem As Worksheet
     Dim wsDestino As Worksheet
     Dim caminhoOrigem As String
+    Dim caminhoDestino As String
     Dim nomeArquivo As String
-    Dim ultimaLinha As Long
     Dim nomePlanilhas As Variant
     Dim i As Integer
+    Dim ultimaLinha As Long
+
+    ' Defina o caminho fixo para a pasta de origem dos arquivos de trades
+    caminhoOrigem = "C:\Caminho\Para\Pasta\De\Origem\"  ' Substitua pelo caminho real
+    ' Defina o caminho fixo para salvar o arquivo consolidado
+    caminhoDestino = "C:\Caminho\Para\Pasta\De\Destino\"  ' Substitua pelo caminho real
 
     ' Array contendo os nomes das planilhas que deseja consolidar
     nomePlanilhas = Array("CC_total", "RV_total", "RF_total", "FUNDOS_total")
@@ -24,13 +30,13 @@ Sub ConsolidarPlanilhas()
         Set wsDestino = wbDestino.Sheets.Add
         wsDestino.Name = nomePlanilhas(i)
         
-        ' Solicita o caminho do arquivo de origem
-        caminhoOrigem = Application.GetOpenFilename("Arquivos Excel (*.xlsx; *.xlsm), *.xlsx; *.xlsm", , "Selecione o arquivo de origem para a planilha " & nomePlanilhas(i))
+        ' Defina o nome do arquivo de origem (substitua pelo nome fixo, se necessário)
+        nomeArquivo = caminhoOrigem & "Arquivo_" & nomePlanilhas(i) & ".xlsx"  ' Exemplo de nome de arquivo
         
-        ' Verifica se o usuário selecionou um arquivo
-        If caminhoOrigem <> "False" Then
+        ' Verifica se o arquivo existe
+        If Dir(nomeArquivo) <> "" Then
             ' Abre o Workbook de origem
-            Set wbOrigem = Workbooks.Open(caminhoOrigem)
+            Set wbOrigem = Workbooks.Open(nomeArquivo)
             
             ' Verifica se a planilha especificada existe no arquivo de origem
             On Error Resume Next
@@ -41,20 +47,20 @@ Sub ConsolidarPlanilhas()
                 ' Copia todos os dados da planilha de origem para a planilha de destino
                 wsOrigem.UsedRange.Copy Destination:=wsDestino.Range("A1")
             Else
-                MsgBox "A planilha " & nomePlanilhas(i) & " não foi encontrada no arquivo selecionado.", vbExclamation
+                MsgBox "A planilha " & nomePlanilhas(i) & " não foi encontrada no arquivo " & nomeArquivo, vbExclamation
             End If
             
             ' Fecha o Workbook de origem sem salvar alterações
             wbOrigem.Close SaveChanges:=False
+        Else
+            MsgBox "O arquivo " & nomeArquivo & " não foi encontrado.", vbExclamation
         End If
     Next i
     
-    ' Salva o Workbook consolidado
-    nomeArquivo = Application.GetSaveAsFilename("Consolidado.xlsx", "Arquivos Excel (*.xlsx), *.xlsx", , "Salvar arquivo consolidado como")
-    If nomeArquivo <> "False" Then
-        wbDestino.SaveAs Filename:=nomeArquivo
-        MsgBox "Consolidação concluída com sucesso!", vbInformation
-    End If
+    ' Salva o Workbook consolidado na pasta de destino
+    nomeArquivo = caminhoDestino & "Consolidado.xlsx"
+    wbDestino.SaveAs Filename:=nomeArquivo
+    MsgBox "Consolidação concluída com sucesso! Arquivo salvo em: " & nomeArquivo, vbInformation
     
     ' Fecha o Workbook consolidado
     wbDestino.Close SaveChanges:=True
