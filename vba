@@ -1,33 +1,25 @@
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.alert import Alert
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoAlertPresentException
+import time
 
-# Configuração do navegador
-driver = webdriver.Chrome()
+# Configuração do driver (exemplo com o Chrome)
+driver = webdriver.Chrome(executable_path='/caminho/para/seu/chromedriver')  # Coloque o caminho do seu chromedriver
 
-# Navegar para a página desejada
-driver.get('URL_DA_SUA_PAGINA')
+# Acessa a página desejada
+driver.get("URL_da_sua_página")
 
-# Tempo máximo de espera pelo alerta (em segundos)
-tempo_maximo_espera = 10
+# Espera um pouco para garantir que os alertas tenham tempo de aparecer
+time.sleep(3)
 
 try:
-    # Esperar até que o alerta esteja presente
-    WebDriverWait(driver, tempo_maximo_espera).until(EC.alert_is_present())
-
-    # Mudar o foco para o alerta
-    alerta = Alert(driver)
-
-    # Clicar no botão "OK" do alerta
-    alerta.accept()
-
-    print("Alerta encontrado e aceito.")
-
-except TimeoutException:
-    print("Nenhum alerta foi encontrado dentro do tempo limite.")
+    # Verifica se há um alerta presente
+    alert = Alert(driver)  # Tenta acessar o alerta
+    alert.accept()  # Clica no botão "OK" (accept)
+    print("Alerta encontrado e clicado em OK.")
+except NoAlertPresentException:
+    print("Nenhum alerta presente.")
 
 # Fechar o navegador
 driver.quit()
