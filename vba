@@ -1,31 +1,38 @@
-Sub SaveWorkbookCopy()
-
-    Dim filePath As String
-    Dim fileName As String
-    Dim saveDirectory As String
-    Dim copiedWorkbook As Workbook
+Sub SalvarECopiarEExcluir()
+    Dim wbOriginal As Workbook
+    Dim wbNovo As Workbook
+    Dim caminhoOriginal As String
+    Dim caminhoNovo As String
+    Dim sheetsExcluir As Variant
+    Dim i As Integer
     
-    ' Defina o diretório onde o arquivo será salvo
-    saveDirectory = "C:\Caminho\Para\Seu\Diretorio\"  ' Altere para o diretório desejado
+    ' Referência ao workbook original
+    Set wbOriginal = ThisWorkbook
+    caminhoOriginal = wbOriginal.FullName
     
-    ' Defina o nome do arquivo
-    fileName = "Copia_Macro_" & Format(Now, "yyyymmdd_hhnnss") & ".xlsx"  ' Nome com timestamp
+    ' Salvar uma cópia em .xlsx
+    caminhoNovo = Replace(caminhoOriginal, ".xlsm", "_Copia.xlsx")
+    wbOriginal.SaveCopyAs caminhoNovo
     
-    ' Combine diretório e nome do arquivo
-    filePath = saveDirectory & fileName
+    ' Abrir o arquivo copiado
+    Set wbNovo = Workbooks.Open(caminhoNovo)
     
-    ' Crie uma cópia do workbook atual
-    ThisWorkbook.Copy
+    ' Definir as planilhas a serem excluídas
+    sheetsExcluir = Array("Planilha1", "Planilha2") ' Adicione os nomes das planilhas que você quer excluir
     
-    ' Defina a cópia como um novo workbook
-    Set copiedWorkbook = ActiveWorkbook
+    ' Excluir as planilhas especificadas
+    For i = LBound(sheetsExcluir) To UBound(sheetsExcluir)
+        On Error Resume Next ' Caso a planilha não exista, ignorar o erro
+        wbNovo.Sheets(sheetsExcluir(i)).Delete
+        On Error GoTo 0 ' Restaurar o tratamento de erro padrão
+    Next i
     
-    ' Salve a cópia como .xlsx
-    copiedWorkbook.SaveAs filePath, FileFormat:=xlOpenXMLWorkbook
+    ' Salvar o arquivo como .xlsm
+    caminhoNovo = Replace(caminhoNovo, ".xlsx", ".xlsm")
+    wbNovo.SaveAs caminhoNovo, FileFormat:=xlOpenXMLWorkbookMacroEnabled
     
-    ' Feche a cópia sem salvar alterações (já foi salva)
-    copiedWorkbook.Close SaveChanges:=False
+    ' Fechar o arquivo
+    wbNovo.Close SaveChanges:=False
     
-    MsgBox "Cópia do arquivo salva com sucesso em " & filePath
-
+    MsgBox "Cópia salva como .xlsm com as planilhas excluídas!"
 End Sub
