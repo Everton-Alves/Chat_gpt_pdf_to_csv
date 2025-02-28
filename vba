@@ -3,6 +3,7 @@ Sub SaveWorkbookCopy()
     Dim filePath As String
     Dim fileName As String
     Dim saveDirectory As String
+    Dim copiedWorkbook As Workbook
     
     ' Defina o diretório onde o arquivo será salvo
     saveDirectory = "C:\Caminho\Para\Seu\Diretorio\"  ' Altere para o diretório desejado
@@ -13,9 +14,18 @@ Sub SaveWorkbookCopy()
     ' Combine diretório e nome do arquivo
     filePath = saveDirectory & fileName
     
-    ' Salve o arquivo como .xlsx
-    ThisWorkbook.SaveAs filePath, FileFormat:=xlOpenXMLWorkbook
+    ' Crie uma cópia do workbook atual
+    ThisWorkbook.Copy
     
-    MsgBox "Arquivo salvo com sucesso em " & filePath
+    ' Defina a cópia como um novo workbook
+    Set copiedWorkbook = ActiveWorkbook
+    
+    ' Salve a cópia como .xlsx
+    copiedWorkbook.SaveAs filePath, FileFormat:=xlOpenXMLWorkbook
+    
+    ' Feche a cópia sem salvar alterações (já foi salva)
+    copiedWorkbook.Close SaveChanges:=False
+    
+    MsgBox "Cópia do arquivo salva com sucesso em " & filePath
 
 End Sub
