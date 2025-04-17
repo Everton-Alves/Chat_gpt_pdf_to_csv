@@ -1,42 +1,18 @@
-Sub CopiarPlanilhaEModulos()
-
-    Dim wbOrigem As Workbook
-    Dim wbNovo As Workbook
-    Dim caminhoTemp As String
-    Dim fs As Object
-    Dim vbComp As Object
+    ' Ajustar os botões de macro da planilha copiada
+    Dim shp As Shape
+    Dim nomeMacro As String
     
-    Set wbOrigem = ThisWorkbook
-    
-    ' Copiar a planilha "vencimentos" para um novo workbook
-    wbOrigem.Sheets("vencimentos").Copy
-    Set wbNovo = ActiveWorkbook
-    
-    ' Renomear a aba no novo arquivo
-    wbNovo.Sheets(1).Name = "vencimentos"
-    
-    ' Salvar como .xlsm
-    caminhoTemp = wbOrigem.Path & "\ArquivoVencimentos_" & Format(Now, "yyyymmdd_hhnnss") & ".xlsm"
-    Application.DisplayAlerts = False
-    wbNovo.SaveAs Filename:=caminhoTemp, FileFormat:=xlOpenXMLWorkbookMacroEnabled
-    Application.DisplayAlerts = True
-
-    ' Copiar os módulos para o novo arquivo
-    With wbNovo.VBProject.VBComponents
-        ' Exportar e importar o módulo "email"
-        wbOrigem.VBProject.VBComponents("email").Export wbOrigem.Path & "\email.bas"
-        .Import wbOrigem.Path & "\email.bas"
-        
-        ' Exportar e importar o módulo "emailFunctions"
-        wbOrigem.VBProject.VBComponents("emailFunctions").Export wbOrigem.Path & "\emailFunctions.bas"
-        .Import wbOrigem.Path & "\emailFunctions.bas"
+    With wbNovo.Sheets("vencimentos")
+        For Each shp In .Shapes
+            If shp.Type = msoFormControl Then
+                If shp.FormControlType = xlButtonControl Then
+                    nomeMacro = shp.OnAction
+                    ' Ajusta para que a macro seja local ao novo arquivo
+                    If InStr(1, nomeMacro, "!") > 0 Then
+                        nomeMacro = Split(nomeMacro, "!")(1)
+                    End If
+                    shp.OnAction = "'" & wbNovo.Name & "'!" & nomeMacro
+                End If
+            End If
+        Next shp
     End With
-    
-    ' Excluir arquivos temporários
-    Set fs = CreateObject("Scripting.FileSystemObject")
-    If fs.FileExists(wbOrigem.Path & "\email.bas") Then fs.DeleteFile wbOrigem.Path & "\email.bas"
-    If fs.FileExists(wbOrigem.Path & "\emailFunctions.bas") Then fs.DeleteFile wbOrigem.Path & "\emailFunctions.bas"
-
-    MsgBox "Novo arquivo criado em: " & caminhoTemp, vbInformation
-
-End Sub
